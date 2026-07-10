@@ -1,5 +1,6 @@
 ---
 import { services } from "../data/services";
+import { cities } from "../data/cities";
 ---
 
 <footer class="site-footer">
@@ -20,12 +21,23 @@ import { services } from "../data/services";
       </ul>
     </div>
 
+    <div class="site-footer__links">
+      <p class="site-footer__heading">Locations</p>
+      <ul class="site-footer__list">
+        {cities.map((city) => (
+          <li><a href={`/locations/${city.slug}`}>{city.name}</a></li>
+        ))}
+      </ul>
+    </div>
+
     <div class="site-footer__meta">
       <p class="mono site-footer__area">Service area: All Central Florida cities</p>
       <nav class="site-footer__nav" aria-label="Footer">
         <a href="/book">Book now</a>
         <a href="/#call">Call us</a>
         <a href="/#faq">FAQ</a>
+        <a href="/guides/weekly-house-cleaning-cost-orlando">Pricing guide</a>
+        <a href="/locations">All locations</a>
       </nav>
     </div>
 
@@ -119,7 +131,7 @@ import { services } from "../data/services";
 
   @media (min-width: 768px) {
     .site-footer__inner {
-      grid-template-columns: 1.2fr 1fr 1fr;
+      grid-template-columns: 1.2fr 1fr 1fr 1fr;
       align-items: start;
     }
 

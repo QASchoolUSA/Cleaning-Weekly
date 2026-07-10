@@ -13,7 +13,7 @@ import FAQ from "../components/FAQ.astro";
 import Footer from "../components/Footer.astro";
 ---
 
-<BaseLayout>
+<BaseLayout canonicalPath="/">
   <a class="sr-only" href="#main">Skip to main content</a>
   <Header />
   <main id="main">
@@ -26,16 +26,4 @@ import Footer from "../components/Footer.astro";
     <FAQ />
   </main>
   <Footer />
-
-  <script type="application/ld+json" set:html={JSON.stringify({
-    "@context": "https://schema.org",
-    "@type": "LocalBusiness",
-    name: "Cleaning Weekly",
-    description: "Affordable, reliable weekly home and office cleaning across Central Florida.",
-    areaServed: {
-      "@type": "AdministrativeArea",
-      name: "Central Florida",
-    },
-    serviceType: ["House cleaning", "Office cleaning", "Recurring cleaning"],
-  })} />
 </BaseLayout>
