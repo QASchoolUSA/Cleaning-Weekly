@@ -1,0 +1,153 @@
+---
+export const prerender = true;
+
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Header from "../../components/Header.astro";
+import Footer from "../../components/Footer.astro";
+import { cities } from "../../data/cities";
+import { breadcrumbJsonLd } from "../../lib/schema";
+
+const path = "/locations";
+const title = "Service Areas — Central Florida Cleaning | Cleaning Weekly";
+const description =
+  "Cleaning Weekly serves Orlando, Winter Park, Kissimmee, Sanford, Apopka, Oviedo, and surrounding Central Florida communities with recurring home and office cleaning.";
+---
+
+<BaseLayout title={title} description={description} canonicalPath={path}>
+  <a class="sr-only" href="#main">Skip to main content</a>
+  <Header />
+  <main id="main">
+    <section class="areas-hero">
+      <div class="container container--narrow">
+        <p class="areas-hero__eyebrow mono">Central Florida</p>
+        <h1 class="display areas-hero__title">Where we clean</h1>
+        <p class="areas-hero__lead">
+          Recurring home and office cleaning across Central Florida cities — same
+          trusted local teams, flat weekly rates.
+        </p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <ul class="areas-grid">
+          {cities.map((city) => (
+            <li>
+              <a href={`/locations/${city.slug}`} class="areas-card">
+                <span class="headline areas-card__name">{city.name}</span>
+                <span class="areas-card__meta">
+                  {city.neighborhoods.slice(0, 3).join(" · ")}
+                </span>
+                <span class="areas-card__cta mono">View services →</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+        <p class="areas-guide">
+          Pricing questions?
+          <a href="/guides/weekly-house-cleaning-cost-orlando">
+            Weekly house cleaning cost in Orlando
+          </a>
+        </p>
+      </div>
+    </section>
+  </main>
+  <Footer />
+
+  <script
+    type="application/ld+json"
+    set:html={JSON.stringify(
+      breadcrumbJsonLd([
+        { name: "Home", path: "/" },
+        { name: "Locations", path },
+      ]),
+    )}
+  />
+</BaseLayout>
+
+<style>
+  .areas-hero {
+    padding-block: clamp(var(--space-12), 8vw, var(--space-20));
+    background: var(--teal-band);
+    color: var(--ink-on-teal);
+  }
+
+  .areas-hero__eyebrow {
+    margin: 0 0 var(--space-4);
+    font-size: 0.8125rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--ink-on-teal-muted);
+  }
+
+  .areas-hero__title {
+    margin: 0 0 var(--space-5);
+    font-size: clamp(2rem, 4.5vw, 3.25rem);
+  }
+
+  .areas-hero__lead {
+    margin: 0;
+    color: var(--ink-on-teal-muted);
+    font-size: 1.125rem;
+    max-width: 42ch;
+  }
+
+  .areas-grid {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  .areas-card {
+    display: grid;
+    gap: var(--space-2);
+    padding: var(--space-6);
+    text-decoration: none;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    transition: border-color var(--duration) var(--ease-out);
+  }
+
+  .areas-card:hover {
+    border-color: var(--teal-soft);
+  }
+
+  .areas-card__name {
+    font-size: 1.375rem;
+    color: var(--teal-deep);
+  }
+
+  .areas-card__meta {
+    font-size: 0.9375rem;
+    color: var(--ink-secondary);
+  }
+
+  .areas-card__cta {
+    margin-top: var(--space-2);
+    font-size: 0.8125rem;
+    color: var(--teal);
+  }
+
+  .areas-guide {
+    margin-top: var(--space-10);
+  }
+
+  .areas-guide a {
+    color: var(--teal);
+  }
+
+  @media (min-width: 640px) {
+    .areas-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .areas-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+</style>

@@ -582,3 +582,20 @@ Syntactically valid `@graph` combining **Organization**, **WebSite**, **Professi
 ---
 
 *Blueprint version: 2026-07-10 · Source of truth for geo/services: Cleaning Weekly site copy + `src/data/services.ts`*
+
+---
+
+## Implementation status (shipped)
+
+| Item | Status | Location |
+|------|--------|----------|
+| Site-wide Organization / WebSite / ProfessionalService JSON-LD | Shipped | `src/lib/schema.ts` → `BaseLayout` |
+| Canonical, OG/Twitter, robots meta | Shipped | `src/layouts/BaseLayout.astro` |
+| `robots.txt` + sitemap | Shipped | `public/robots.txt`, `@astrojs/sitemap` |
+| Orlando pricing guide (AEO) | Shipped | `/guides/weekly-house-cleaning-cost-orlando` |
+| City hubs (6) | Shipped | `/locations/{city}` |
+| City × service landers (36) | Shipped | `/locations/{city}/{service}` |
+| Locations index + nav/footer links | Shipped | `/locations`, Header, Footer |
+| Replace `sameAs` / phone placeholders | Pending | `src/config/site.ts` |
+| Live quote-log pricing matrix | Pending | Guide methodology note |
+| Restaurant/café service slug | Not started | Expansion lane |

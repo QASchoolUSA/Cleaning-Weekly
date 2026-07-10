@@ -1,0 +1,243 @@
+---
+export const prerender = true;
+
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import Header from "../../../components/Header.astro";
+import Footer from "../../../components/Footer.astro";
+import { cities, type CityDefinition } from "../../../data/cities";
+import { services } from "../../../data/services";
+import { breadcrumbJsonLd } from "../../../lib/schema";
+import { siteConfig } from "../../../config/site";
+
+export function getStaticPaths() {
+  return cities.map((city) => ({
+    params: { city: city.slug },
+    props: { city },
+  }));
+}
+
+interface Props {
+  city: CityDefinition;
+}
+
+const { city } = Astro.props;
+const path = `/locations/${city.slug}`;
+const title = `Cleaning Services in ${city.name}, FL — Cleaning Weekly`;
+const description = `Recurring home and office cleaning in ${city.name} and Central Florida. Insured local teams, flat weekly rates, online booking. Serving ${city.neighborhoods.slice(0, 3).join(", ")}, and nearby areas.`;
+---
+
+<BaseLayout title={title} description={description} canonicalPath={path}>
+  <a class="sr-only" href="#main">Skip to main content</a>
+  <Header />
+  <main id="main">
+    <section class="loc-hero" aria-labelledby="loc-title">
+      <div class="container loc-hero__inner">
+        <p class="loc-hero__eyebrow mono">Central Florida · {city.regionLabel}</p>
+        <h1 id="loc-title" class="display loc-hero__title">
+          Cleaning Weekly in {city.name}
+        </h1>
+        <p class="loc-hero__lead">
+          Affordable recurring home and office cleaning for {city.name} — same trusted
+          local team, flat rates, booked in minutes.
+        </p>
+        <div class="loc-hero__actions">
+          <a class="btn btn--light" href="/book">Get a free quote</a>
+          <a class="btn btn--secondary" href={`tel:${siteConfig.telephoneE164}`}>
+            Call {siteConfig.telephoneDisplay}
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <h2 class="display loc-section-title">Services in {city.name}</h2>
+        <p class="loc-section-lead">
+          Every service below is available across {city.name}
+          {city.neighborhoods.length ? ` — including ${city.neighborhoods.join(", ")}` : ""}.
+        </p>
+        <ul class="loc-services">
+          {services.map((service) => (
+            <li>
+              <a href={`/locations/${city.slug}/${service.slug}`} class="loc-services__link">
+                <span class="headline loc-services__name">{service.title}</span>
+                <span class="loc-services__desc">{service.description}</span>
+                <span class="mono loc-services__price">
+                  From ${service.startingPrice}/
+                  {service.priceUnit === "week"
+                    ? "week"
+                    : service.priceUnit === "visit"
+                      ? "visit"
+                      : "project"}
+                </span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+
+    <section class="section section--surface">
+      <div class="container container--narrow">
+        <h2 class="display loc-section-title">Why {city.name} neighbors book Cleaning Weekly</h2>
+        <ul class="loc-trust">
+          <li>Insured and background-checked local teams — not anonymous gig workers.</li>
+          <li>Flat weekly rates with no surge pricing or doorstep add-ons.</li>
+          <li>Same team continuity so preferences stick from visit to visit.</li>
+          <li>{city.pricingNote}</li>
+        </ul>
+        <p>
+          Comparing costs?
+          <a href="/guides/weekly-house-cleaning-cost-orlando">
+            Read the Orlando weekly cleaning cost guide
+          </a>
+          for Central Florida price bands.
+        </p>
+      </div>
+    </section>
+
+    <section class="section section--teal">
+      <div class="container loc-cta">
+        <h2 class="display loc-cta__title">Book cleaning in {city.name}</h2>
+        <p class="loc-cta__lead">
+          Instant online quote, or call if you want to talk through your space first.
+        </p>
+        <a class="btn btn--light" href="/book">Start booking</a>
+      </div>
+    </section>
+  </main>
+  <Footer />
+
+  <script
+    type="application/ld+json"
+    set:html={JSON.stringify(
+      breadcrumbJsonLd([
+        { name: "Home", path: "/" },
+        { name: "Locations", path: "/locations" },
+        { name: city.name, path },
+      ]),
+    )}
+  />
+</BaseLayout>
+
+<style>
+  .loc-hero {
+    background: var(--teal-band);
+    color: var(--ink-on-teal);
+    padding-block: clamp(var(--space-12), 8vw, var(--space-20));
+  }
+
+  .loc-hero__inner {
+    max-width: 40rem;
+  }
+
+  .loc-hero__eyebrow {
+    margin: 0 0 var(--space-4);
+    font-size: 0.8125rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--ink-on-teal-muted);
+  }
+
+  .loc-hero__title {
+    margin: 0 0 var(--space-5);
+    font-size: clamp(2rem, 4.5vw, 3.25rem);
+    text-wrap: balance;
+  }
+
+  .loc-hero__lead {
+    margin: 0 0 var(--space-6);
+    color: var(--ink-on-teal-muted);
+    font-size: 1.125rem;
+  }
+
+  .loc-hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+  }
+
+  .loc-section-title {
+    margin: 0 0 var(--space-4);
+    font-size: clamp(1.75rem, 3.5vw, 2.5rem);
+    color: var(--teal-deep);
+  }
+
+  .loc-section-lead {
+    margin: 0 0 var(--space-8);
+    max-width: 48ch;
+    color: var(--ink-secondary);
+  }
+
+  .loc-services {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  .loc-services__link {
+    display: grid;
+    gap: var(--space-2);
+    padding: var(--space-6);
+    text-decoration: none;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    transition: border-color var(--duration) var(--ease-out);
+  }
+
+  .loc-services__link:hover {
+    border-color: var(--teal-soft);
+  }
+
+  .loc-services__name {
+    font-size: 1.25rem;
+    color: var(--teal-deep);
+  }
+
+  .loc-services__desc {
+    font-size: 0.9375rem;
+    color: var(--ink-secondary);
+  }
+
+  .loc-services__price {
+    font-size: 0.875rem;
+  }
+
+  .loc-trust {
+    margin: 0 0 var(--space-6);
+    padding-left: 1.25rem;
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  .loc-trust + p a {
+    color: var(--teal);
+  }
+
+  .loc-cta__title {
+    margin: 0 0 var(--space-4);
+    color: var(--ink-on-teal);
+    font-size: clamp(1.75rem, 3.5vw, 2.5rem);
+  }
+
+  .loc-cta__lead {
+    margin: 0 0 var(--space-6);
+    color: var(--ink-on-teal-muted);
+    max-width: 40ch;
+  }
+
+  @media (min-width: 640px) {
+    .loc-services {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .loc-services {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+</style>

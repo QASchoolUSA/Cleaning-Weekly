@@ -13,7 +13,11 @@ const hasBooking = Boolean(bookingId && price > 0);
 const priceLabel = hasBooking ? formatPrice(price, unit) : "";
 ---
 
-<BaseLayout title="Booking Confirmed | Cleaning Weekly">
+<BaseLayout
+  title="Booking Confirmed | Cleaning Weekly"
+  canonicalPath="/book/confirmation"
+  noindex={true}
+>
   <Header />
   <main id="main" class="confirmation section">
     <div class="container container--narrow confirmation__inner">

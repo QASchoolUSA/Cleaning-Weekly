@@ -6,6 +6,7 @@ import Header from "../../components/Header.astro";
 import Footer from "../../components/Footer.astro";
 import ServicePageContent from "../../components/ServicePageContent.astro";
 import { services } from "../../data/services";
+import { breadcrumbJsonLd, servicePageJsonLd } from "../../lib/schema";
 
 export function getStaticPaths() {
   return services.map((service) => ({
@@ -15,11 +16,13 @@ export function getStaticPaths() {
 }
 
 const { service } = Astro.props;
+const path = `/services/${service.slug}`;
 ---
 
 <BaseLayout
   title={`${service.title} — Cleaning Weekly | Central Florida`}
   description={service.metaDescription}
+  canonicalPath={path}
 >
   <a class="sr-only" href="#main">Skip to main content</a>
   <Header />
@@ -28,20 +31,18 @@ const { service } = Astro.props;
   </main>
   <Footer />
 
-  <script type="application/ld+json" set:html={JSON.stringify({
-    "@context": "https://schema.org",
-    "@type": "Service",
-    name: service.title,
-    description: service.description,
-    provider: {
-      "@type": "LocalBusiness",
-      name: "Cleaning Weekly",
-      areaServed: "Central Florida",
-    },
-    offers: {
-      "@type": "Offer",
-      price: service.startingPrice,
-      priceCurrency: "USD",
-    },
-  })} />
+  <script
+    type="application/ld+json"
+    set:html={JSON.stringify(servicePageJsonLd(service))}
+  />
+  <script
+    type="application/ld+json"
+    set:html={JSON.stringify(
+      breadcrumbJsonLd([
+        { name: "Home", path: "/" },
+        { name: "Services", path: "/#services" },
+        { name: service.title, path },
+      ]),
+    )}
+  />
 </BaseLayout>

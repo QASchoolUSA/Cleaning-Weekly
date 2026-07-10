@@ -1,0 +1,388 @@
+---
+export const prerender = true;
+
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import Header from "../../../components/Header.astro";
+import Footer from "../../../components/Footer.astro";
+import { cities, type CityDefinition } from "../../../data/cities";
+import { services, type ServiceDefinition } from "../../../data/services";
+import {
+  breadcrumbJsonLd,
+  cityServiceJsonLd,
+  faqPageJsonLd,
+} from "../../../lib/schema";
+import { siteConfig } from "../../../config/site";
+
+export function getStaticPaths() {
+  return cities.flatMap((city) =>
+    services.map((service) => ({
+      params: { city: city.slug, service: service.slug },
+      props: { city, service },
+    })),
+  );
+}
+
+interface Props {
+  city: CityDefinition;
+  service: ServiceDefinition;
+}
+
+const { city, service } = Astro.props;
+const path = `/locations/${city.slug}/${service.slug}`;
+const unitLabel =
+  service.priceUnit === "week"
+    ? "week"
+    : service.priceUnit === "visit"
+      ? "visit"
+      : "project";
+const title = `${service.title} in ${city.name}, FL — Cleaning Weekly`;
+const description = `${service.metaDescription.replace("Central Florida", city.name)}. Serving ${city.neighborhoods.slice(0, 3).join(", ")}, and nearby ${city.name} areas.`;
+const bookUrl = `/book?service=${service.slug}`;
+
+const localFaqs = [
+  {
+    question: `Do you offer ${service.shortTitle.toLowerCase()} cleaning in ${city.name}?`,
+    answer: `Yes. Cleaning Weekly provides ${service.title.toLowerCase()} across ${city.name} and Central Florida, including ${city.neighborhoods.slice(0, 2).join(" and ")}.`,
+  },
+  {
+    question: `How much does ${service.shortTitle.toLowerCase()} cleaning cost in ${city.name}?`,
+    answer: `${service.title} in ${city.name} starts around $${service.startingPrice} per ${unitLabel}. Your exact flat rate depends on space size and frequency — get an instant quote online.`,
+  },
+  ...service.faq,
+];
+---
+
+<BaseLayout title={title} description={description} canonicalPath={path}>
+  <a class="sr-only" href="#main">Skip to main content</a>
+  <Header />
+  <main id="main">
+    <nav class="cs-crumbs container" aria-label="Breadcrumb">
+      <ol>
+        <li><a href="/">Home</a></li>
+        <li><a href="/locations">Locations</a></li>
+        <li><a href={`/locations/${city.slug}`}>{city.name}</a></li>
+        <li aria-current="page">{service.shortTitle}</li>
+      </ol>
+    </nav>
+
+    <section class="cs-hero" aria-labelledby="cs-title">
+      <div class="container cs-hero__grid">
+        <div class="cs-hero__content">
+          <p class="cs-hero__area mono">{city.name}, FL · {service.shortTitle}</p>
+          <h1 id="cs-title" class="display cs-hero__title">
+            {service.title} in {city.name}
+          </h1>
+          <p class="cs-hero__lead">{service.description}</p>
+          <p class="cs-hero__price mono">
+            Starting around <strong>${service.startingPrice}</strong>/{unitLabel}
+          </p>
+          <div class="cs-hero__actions">
+            <a class="btn btn--light" href={bookUrl}>Get instant quote</a>
+            <a class="btn btn--secondary" href={`tel:${siteConfig.telephoneE164}`}>
+              Call {siteConfig.telephoneDisplay}
+            </a>
+          </div>
+        </div>
+        <figure class="cs-hero__media">
+          <img
+            src={service.heroImage}
+            alt={`${service.heroAlt} — ${city.name}`}
+            width="1400"
+            height="933"
+            loading="eager"
+            decoding="async"
+          />
+        </figure>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container cs-split">
+        <div>
+          <h2 class="headline cs-h2">What is included in {city.name}</h2>
+          <p class="cs-lead">
+            The same checklist we use across Central Florida — tailored to your
+            {city.name} home or workspace.
+          </p>
+        </div>
+        <ul class="cs-list">
+          {service.includedItems.map((item) => (
+            <li>{item}</li>
+          ))}
+        </ul>
+      </div>
+    </section>
+
+    <section class="section section--surface">
+      <div class="container container--narrow">
+        <h2 class="headline cs-h2">Serving {city.name} neighborhoods</h2>
+        <p>
+          We clean throughout {city.regionLabel}
+          {city.neighborhoods.length
+            ? ` — including ${city.neighborhoods.join(", ")}`
+            : ""}
+          . {city.pricingNote}
+        </p>
+        <p>
+          Compare Central Florida rates in our
+          <a href="/guides/weekly-house-cleaning-cost-orlando">
+            weekly house cleaning cost guide
+          </a>
+          , or browse all
+          <a href={`/locations/${city.slug}`}>services in {city.name}</a>.
+        </p>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="cs-faq">
+      <div class="container container--narrow">
+        <h2 id="cs-faq" class="display cs-faq-title">
+          {service.shortTitle} cleaning questions in {city.name}
+        </h2>
+        <div class="cs-faq">
+          {localFaqs.map((item) => (
+            <details>
+              <summary>{item.question}</summary>
+              <p>{item.answer}</p>
+            </details>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="section section--teal">
+      <div class="container cs-cta">
+        <h2 class="display cs-cta__title">
+          Book {service.shortTitle.toLowerCase()} cleaning in {city.name}
+        </h2>
+        <p class="cs-cta__lead">
+          Flat rates, insured local teams, online booking in minutes.
+        </p>
+        <a class="btn btn--light" href={bookUrl}>Start booking</a>
+      </div>
+    </section>
+  </main>
+  <Footer />
+
+  <script
+    type="application/ld+json"
+    set:html={JSON.stringify(cityServiceJsonLd(city.name, service, path))}
+  />
+  <script
+    type="application/ld+json"
+    set:html={JSON.stringify(faqPageJsonLd(localFaqs))}
+  />
+  <script
+    type="application/ld+json"
+    set:html={JSON.stringify(
+      breadcrumbJsonLd([
+        { name: "Home", path: "/" },
+        { name: "Locations", path: "/locations" },
+        { name: city.name, path: `/locations/${city.slug}` },
+        { name: service.title, path },
+      ]),
+    )}
+  />
+</BaseLayout>
+
+<style>
+  .cs-crumbs {
+    padding-block: var(--space-4);
+  }
+
+  .cs-crumbs ol {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    font-size: 0.875rem;
+    color: var(--ink-secondary);
+  }
+
+  .cs-crumbs li:not(:last-child)::after {
+    content: "/";
+    margin-left: var(--space-2);
+    color: var(--border);
+  }
+
+  .cs-crumbs a {
+    color: var(--teal);
+    text-decoration: none;
+  }
+
+  .cs-crumbs a:hover {
+    text-decoration: underline;
+  }
+
+  .cs-hero {
+    background: var(--teal-band);
+    color: var(--ink-on-teal);
+  }
+
+  .cs-hero__grid {
+    display: grid;
+    min-height: clamp(24rem, 60vh, 36rem);
+  }
+
+  .cs-hero__content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: var(--space-5);
+    padding: clamp(var(--space-10), 6vw, var(--space-16)) 0;
+    max-width: 40rem;
+  }
+
+  .cs-hero__area {
+    margin: 0;
+    font-size: 0.8125rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--ink-on-teal-muted);
+  }
+
+  .cs-hero__title {
+    margin: 0;
+    font-size: clamp(1.875rem, 4vw, 3rem);
+    text-wrap: balance;
+  }
+
+  .cs-hero__lead,
+  .cs-hero__price {
+    margin: 0;
+    color: var(--ink-on-teal-muted);
+  }
+
+  .cs-hero__price strong {
+    color: var(--ink-on-teal);
+  }
+
+  .cs-hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+  }
+
+  .cs-hero__media {
+    margin: 0;
+    min-height: 14rem;
+    overflow: hidden;
+  }
+
+  .cs-hero__media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .cs-split {
+    display: grid;
+    gap: var(--space-10);
+  }
+
+  .cs-h2 {
+    margin: 0 0 var(--space-3);
+    font-size: clamp(1.5rem, 3vw, 2rem);
+    color: var(--teal-deep);
+  }
+
+  .cs-lead {
+    margin: 0;
+    color: var(--ink-secondary);
+    max-width: 36ch;
+  }
+
+  .cs-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  .cs-list li {
+    position: relative;
+    padding-left: 1.25rem;
+  }
+
+  .cs-list li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0.55em;
+    width: 0.45rem;
+    height: 0.45rem;
+    border-radius: 50%;
+    background: var(--teal);
+  }
+
+  .section--surface a {
+    color: var(--teal);
+  }
+
+  .cs-faq-title {
+    margin: 0 0 var(--space-8);
+    font-size: clamp(1.75rem, 3vw, 2.25rem);
+    color: var(--teal-deep);
+  }
+
+  .cs-faq {
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  .cs-faq details {
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background: var(--ground);
+  }
+
+  .cs-faq summary {
+    padding: var(--space-5) var(--space-6);
+    font-weight: 600;
+    cursor: pointer;
+    list-style: none;
+  }
+
+  .cs-faq summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .cs-faq p {
+    margin: 0;
+    padding: 0 var(--space-6) var(--space-5);
+    color: var(--ink-secondary);
+  }
+
+  .cs-cta__title {
+    margin: 0 0 var(--space-4);
+    color: var(--ink-on-teal);
+    font-size: clamp(1.75rem, 3.5vw, 2.5rem);
+  }
+
+  .cs-cta__lead {
+    margin: 0 0 var(--space-6);
+    color: var(--ink-on-teal-muted);
+  }
+
+  @media (min-width: 900px) {
+    .cs-hero__grid {
+      grid-template-columns: 1fr 1.05fr;
+      gap: var(--space-8);
+      align-items: stretch;
+    }
+
+    .cs-split {
+      grid-template-columns: 0.9fr 1.1fr;
+    }
+  }
+
+  @media (max-width: 899px) {
+    .cs-hero__media {
+      order: -1;
+      max-height: 16rem;
+    }
+  }
+</style>
