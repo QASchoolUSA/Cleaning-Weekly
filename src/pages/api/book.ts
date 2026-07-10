@@ -5,6 +5,7 @@ import { calculatePrice } from "../../lib/pricing";
 import { bookingPayloadSchema } from "../../lib/schemas";
 import { generateBookingId, saveBooking } from "../../lib/bookings";
 import { sendBookingEmails } from "../../lib/mail";
+import { forwardToBookingBroom } from "../../lib/booking-broom";
 import { getServiceBySlug } from "../../data/services";
 
 export const POST: APIRoute = async ({ request }) => {
@@ -67,6 +68,11 @@ export const POST: APIRoute = async ({ request }) => {
 
     await saveBooking(booking);
 
+    const broom = await forwardToBookingBroom(booking);
+    if (broom.error) {
+      console.error("[api/book] Booking Broom forward failed:", broom.error);
+    }
+
     return new Response(
       JSON.stringify({
         ok: true,
@@ -74,6 +80,7 @@ export const POST: APIRoute = async ({ request }) => {
         estimatedPrice: booking.estimatedPrice,
         priceUnit: booking.priceUnit,
         emailsSent,
+        bookingBroom: broom.forwarded,
       }),
       { status: 200, headers: { "Content-Type": "application/json" } },
     );
