@@ -1,0 +1,49 @@
+---
+export const prerender = true;
+
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Header from "../../components/Header.astro";
+import Footer from "../../components/Footer.astro";
+import "../../styles/booking-wizard.css";
+---
+
+<BaseLayout
+  title="Book Cleaning — Instant Quote | Cleaning Weekly"
+  description="Get an instant cleaning estimate and book your service online. Home, office, deep clean, move-in/out, post-construction, and Airbnb turnovers across Central Florida."
+>
+  <a class="sr-only" href="#main">Skip to main content</a>
+  <Header />
+  <main id="main" class="book-page">
+    <div class="container book-page__inner">
+      <header class="book-page__header">
+        <h1 class="book-page__title">Book your cleaning</h1>
+      </header>
+
+      <div id="booking-wizard" class="book-shell">
+        <div class="book-shell__main">
+          <div class="book-shell__progress">
+            <p id="wizard-progress-label" class="book-progress-label"></p>
+            <div class="book-progress-track" role="progressbar" aria-valuemin="1" aria-valuemax="4">
+              <div id="wizard-progress-fill" class="book-progress-fill"></div>
+            </div>
+          </div>
+
+          <div id="wizard-error" class="wizard-error" role="alert" hidden></div>
+          <div id="wizard-step" class="wizard-step"></div>
+
+          <div id="wizard-price-strip" class="wizard-price-strip" hidden></div>
+
+          <div class="book-shell__actions">
+            <button id="wizard-back" class="btn btn--ghost" type="button" hidden>Back</button>
+            <button id="wizard-next" class="btn btn--primary" type="button">Next</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+  <Footer />
+</BaseLayout>
+
+<script>
+  import "../../scripts/booking-wizard.ts";
+</script>

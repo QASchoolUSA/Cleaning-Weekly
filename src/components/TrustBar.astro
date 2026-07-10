@@ -1,0 +1,94 @@
+<section class="trust section" aria-label="Why customers trust Cleaning Weekly">
+  <div class="container trust__inner">
+    <p class="trust__statement headline">
+      We show up on schedule, charge what we quote, and send the same people back
+      every week.
+    </p>
+    <ul class="trust__list">
+      <li>
+        <span class="trust__value mono">No surge pricing</span>
+        <span class="trust__detail">Flat weekly rates, explained upfront</span>
+      </li>
+      <li>
+        <span class="trust__value mono">Same team weekly</span>
+        <span class="trust__detail">Your space, their routine</span>
+      </li>
+      <li>
+        <span class="trust__value mono">Home &amp; office</span>
+        <span class="trust__detail">Residential and commercial</span>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<style>
+  .trust {
+    padding-block: clamp(var(--space-10), 5vw, var(--space-16));
+    background: var(--surface);
+    border-block: 1px solid var(--border);
+  }
+
+  .trust__inner {
+    display: grid;
+    gap: var(--space-10);
+  }
+
+  .trust__statement {
+    margin: 0;
+    max-width: 28ch;
+    font-size: clamp(1.5rem, 3vw, 2rem);
+    color: var(--teal-deep);
+  }
+
+  .trust__list {
+    display: grid;
+    gap: var(--space-6);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .trust__list li {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    position: relative;
+    padding-left: 1rem;
+  }
+
+  .trust__list li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0.45em;
+    width: 0.35rem;
+    height: 0.35rem;
+    border-radius: 50%;
+    background: var(--teal);
+  }
+
+  .trust__value {
+    font-size: 0.875rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    color: var(--teal-deep);
+  }
+
+  .trust__detail {
+    font-size: 1rem;
+    color: var(--ink-secondary);
+  }
+
+  @media (min-width: 768px) {
+    .trust__inner {
+      grid-template-columns: 1.1fr 1fr;
+      align-items: end;
+    }
+
+    .trust__list {
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-8);
+    }
+  }
+</style>

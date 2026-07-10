@@ -1,0 +1,360 @@
+<section id="quote" class="quote section" aria-labelledby="quote-heading">
+  <div class="container quote__grid">
+    <div class="quote__intro">
+      <h2 id="quote-heading" class="display quote__title">Get your free quote</h2>
+      <p class="quote__lead">
+        Tell us a little about your space and we will send a clear weekly rate —
+        usually within one business day.
+      </p>
+      <ul class="quote__checks">
+        <li>Transparent pricing, no surge fees</li>
+        <li>Home and office spaces welcome</li>
+        <li>Serving all Central Florida cities</li>
+      </ul>
+    </div>
+
+    <div class="quote__panel">
+      <form id="quote-form" class="quote-form" novalidate>
+        <div class="quote-form__fields">
+          <div class="field">
+            <label for="name">Full name</label>
+            <input
+              id="name"
+              name="name"
+              type="text"
+              autocomplete="name"
+              required
+              minlength="2"
+              placeholder="Jordan Martinez"
+            />
+            <span class="field-error" id="name-error" role="alert"></span>
+          </div>
+
+          <div class="field">
+            <label for="email">Email</label>
+            <input
+              id="email"
+              name="email"
+              type="email"
+              autocomplete="email"
+              required
+              placeholder="you@example.com"
+            />
+            <span class="field-error" id="email-error" role="alert"></span>
+          </div>
+
+          <div class="field">
+            <label for="phone">Phone <span class="quote-form__optional">(optional)</span></label>
+            <input
+              id="phone"
+              name="phone"
+              type="tel"
+              autocomplete="tel"
+              placeholder="(407) 555-0123"
+            />
+          </div>
+
+          <div class="field">
+            <label for="service">Service type</label>
+            <select id="service" name="service" required>
+              <option value="">Select one</option>
+              <option value="home">Home cleaning</option>
+              <option value="office">Office cleaning</option>
+              <option value="both">Both / not sure yet</option>
+            </select>
+            <span class="field-error" id="service-error" role="alert"></span>
+          </div>
+
+          <div class="field">
+            <label for="city">City</label>
+            <input
+              id="city"
+              name="city"
+              type="text"
+              required
+              placeholder="Orlando, Winter Park, Kissimmee…"
+            />
+            <span class="field-error" id="city-error" role="alert"></span>
+          </div>
+
+          <div class="field quote-form__full">
+            <label for="message">Anything we should know?</label>
+            <textarea
+              id="message"
+              name="message"
+              rows="4"
+              placeholder="Square footage, pets, preferred day, office suite details…"
+            ></textarea>
+          </div>
+        </div>
+
+        <div class="quote-form__footer">
+          <button class="btn btn--primary quote-form__submit" type="submit">
+            Request my quote
+          </button>
+          <p class="quote-form__note">
+            Prefer to talk? <a href="#call">Call or text us</a> — we are happy to
+            walk through your space over the phone.
+          </p>
+        </div>
+
+        <div id="quote-status" class="quote-form__status" role="status" aria-live="polite" hidden></div>
+      </form>
+
+      <div id="quote-success" class="quote-success" tabindex="-1" hidden>
+        <h3 class="headline">Quote request received</h3>
+        <p>
+          Thanks — we will review your space details and reply with a clear weekly
+          rate within one business day.
+        </p>
+        <p class="quote-success__next mono">What happens next: quote → schedule → same team weekly</p>
+        <button class="btn btn--ghost" type="button" id="quote-reset">Submit another request</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  const form = document.getElementById("quote-form") as HTMLFormElement | null;
+  const success = document.getElementById("quote-success");
+  const status = document.getElementById("quote-status");
+  const resetBtn = document.getElementById("quote-reset");
+
+  const fields = {
+    name: {
+      input: document.getElementById("name") as HTMLInputElement,
+      error: document.getElementById("name-error"),
+      message: "Please enter your name.",
+    },
+    email: {
+      input: document.getElementById("email") as HTMLInputElement,
+      error: document.getElementById("email-error"),
+      message: "Please enter a valid email address.",
+    },
+    service: {
+      input: document.getElementById("service") as HTMLSelectElement,
+      error: document.getElementById("service-error"),
+      message: "Please choose a service type.",
+    },
+    city: {
+      input: document.getElementById("city") as HTMLInputElement,
+      error: document.getElementById("city-error"),
+      message: "Please enter your city.",
+    },
+  };
+
+  function validateEmail(value: string) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+  }
+
+  function setFieldError(
+    key: keyof typeof fields,
+    hasError: boolean,
+    customMessage?: string,
+  ) {
+    const field = fields[key];
+    field.input.setAttribute("aria-invalid", hasError ? "true" : "false");
+    if (field.error) {
+      field.error.textContent = hasError
+        ? customMessage || field.message
+        : "";
+    }
+  }
+
+  function validateForm() {
+    let valid = true;
+
+    if (fields.name.input.value.trim().length < 2) {
+      setFieldError("name", true);
+      valid = false;
+    } else {
+      setFieldError("name", false);
+    }
+
+    if (!validateEmail(fields.email.input.value.trim())) {
+      setFieldError("email", true);
+      valid = false;
+    } else {
+      setFieldError("email", false);
+    }
+
+    if (!fields.service.input.value) {
+      setFieldError("service", true);
+      valid = false;
+    } else {
+      setFieldError("service", false);
+    }
+
+    if (fields.city.input.value.trim().length < 2) {
+      setFieldError("city", true);
+      valid = false;
+    } else {
+      setFieldError("city", false);
+    }
+
+    return valid;
+  }
+
+  form?.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    if (!form || !success || !status) return;
+
+    if (!validateForm()) {
+      status.hidden = false;
+      status.textContent = "Please fix the highlighted fields and try again.";
+      status.dataset.variant = "error";
+      return;
+    }
+
+    const submit = form.querySelector(".quote-form__submit") as HTMLButtonElement;
+    submit.disabled = true;
+    status.hidden = false;
+    status.dataset.variant = "loading";
+    status.textContent = "Sending your request…";
+
+    await new Promise((resolve) => setTimeout(resolve, 700));
+
+    form.hidden = true;
+    success.hidden = false;
+    status.hidden = true;
+    success.focus();
+  });
+
+  resetBtn?.addEventListener("click", () => {
+    if (!form || !success || !status) return;
+    form.reset();
+    Object.keys(fields).forEach((key) =>
+      setFieldError(key as keyof typeof fields, false),
+    );
+    success.hidden = true;
+    form.hidden = false;
+    status.hidden = true;
+    form.querySelector<HTMLInputElement>("#name")?.focus();
+  });
+</script>
+
+<style>
+  .quote__grid {
+    display: grid;
+    gap: clamp(var(--space-10), 5vw, var(--space-16));
+    align-items: start;
+  }
+
+  .quote__title {
+    margin: 0 0 var(--space-4);
+    font-size: clamp(2rem, 4vw, 2.75rem);
+    color: var(--teal-deep);
+  }
+
+  .quote__lead {
+    margin: 0 0 var(--space-6);
+    max-width: 36ch;
+    color: var(--ink-secondary);
+    font-size: 1.0625rem;
+  }
+
+  .quote__checks {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  .quote__checks li {
+    position: relative;
+    padding-left: 1.25rem;
+    color: var(--ink);
+  }
+
+  .quote__checks li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0.55em;
+    width: 0.45rem;
+    height: 0.45rem;
+    border-radius: 50%;
+    background: var(--teal);
+  }
+
+  .quote__panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: clamp(var(--space-6), 4vw, var(--space-10));
+  }
+
+  .quote-form__fields {
+    display: grid;
+    gap: var(--space-5);
+  }
+
+  .quote-form__full {
+    grid-column: 1 / -1;
+  }
+
+  .quote-form__optional {
+    font-weight: 400;
+    color: var(--ink-secondary);
+  }
+
+  .quote-form__footer {
+    margin-top: var(--space-8);
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  .quote-form__submit {
+    width: 100%;
+  }
+
+  .quote-form__note {
+    margin: 0;
+    font-size: 0.9375rem;
+    color: var(--ink-secondary);
+  }
+
+  .quote-form__note a {
+    color: var(--teal-deep);
+    font-weight: 600;
+  }
+
+  .quote-form__status[data-variant="error"] {
+    margin-top: var(--space-4);
+    color: var(--error);
+    font-size: 0.9375rem;
+  }
+
+  .quote-form__status[data-variant="loading"] {
+    margin-top: var(--space-4);
+    color: var(--ink-secondary);
+    font-size: 0.9375rem;
+  }
+
+  .quote-success h3 {
+    margin: 0 0 var(--space-3);
+    font-size: 1.5rem;
+    color: var(--teal-deep);
+  }
+
+  .quote-success p {
+    margin: 0 0 var(--space-4);
+    color: var(--ink-secondary);
+  }
+
+  .quote-success__next {
+    font-size: 0.875rem;
+    color: var(--ink);
+  }
+
+  @media (min-width: 900px) {
+    .quote__grid {
+      grid-template-columns: 0.9fr 1.1fr;
+    }
+
+    .quote-form__fields {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+</style>

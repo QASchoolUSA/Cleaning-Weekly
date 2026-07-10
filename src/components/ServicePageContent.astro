@@ -1,0 +1,275 @@
+---
+import type { ServiceDefinition } from "../data/services";
+
+interface Props {
+  service: ServiceDefinition;
+}
+
+const { service } = Astro.props;
+const bookUrl = `/book?service=${service.slug}`;
+---
+
+<section class="service-hero" aria-labelledby="service-title">
+  <div class="service-hero__grid">
+    <div class="service-hero__content">
+      <p class="service-hero__area mono">Central Florida · {service.shortTitle}</p>
+      <h1 id="service-title" class="display service-hero__title">{service.title}</h1>
+      <p class="service-hero__lead">{service.description}</p>
+      <p class="service-hero__price mono">
+        Starting around <strong>${service.startingPrice}</strong>/{service.priceUnit === "week" ? "week" : service.priceUnit === "visit" ? "visit" : "project"}
+      </p>
+      <div class="service-hero__actions">
+        <a class="btn btn--light" href={bookUrl}>Get instant quote</a>
+        <a class="btn btn--secondary" href="/#call">Call us</a>
+      </div>
+    </div>
+    <figure class="service-hero__media">
+      <img
+        src={service.heroImage}
+        alt={service.heroAlt}
+        width="1400"
+        height="933"
+        loading="eager"
+        decoding="async"
+      />
+    </figure>
+  </div>
+</section>
+
+<section class="service-included section">
+  <div class="container service-included__grid">
+    <div>
+      <h2 class="headline service-included__title">What is included</h2>
+      <p class="service-included__lead">
+        Every visit follows a consistent checklist so you know exactly what to expect.
+      </p>
+    </div>
+    <ul class="service-included__list">
+      {service.includedItems.map((item) => (
+        <li>{item}</li>
+      ))}
+    </ul>
+  </div>
+</section>
+
+<section class="service-trust section section--surface">
+  <div class="container service-trust__inner">
+    <p class="headline service-trust__statement">
+      Insured, background-checked, and local to Central Florida — not a gig app.
+    </p>
+    <a class="btn btn--primary" href={bookUrl}>Book {service.shortTitle.toLowerCase()} cleaning</a>
+  </div>
+</section>
+
+<section class="service-faq section" aria-labelledby="service-faq-heading">
+  <div class="container container--narrow">
+    <h2 id="service-faq-heading" class="display service-faq__title">Questions about {service.shortTitle.toLowerCase()} cleaning</h2>
+    <div class="service-faq__list">
+      {service.faq.map((item) => (
+        <details class="service-faq__item">
+          <summary>{item.question}</summary>
+          <p>{item.answer}</p>
+        </details>
+      ))}
+    </div>
+  </div>
+</section>
+
+<section class="service-cta section section--teal">
+  <div class="container service-cta__inner">
+    <h2 class="display service-cta__title">Ready for a clear quote?</h2>
+    <p class="service-cta__lead">
+      Use our booking calculator for an instant estimate, pick your preferred start date, and book in minutes.
+    </p>
+    <a class="btn btn--light" href={bookUrl}>Start booking</a>
+  </div>
+</section>
+
+<style>
+  .service-hero {
+    background: var(--teal-band);
+    color: var(--ink-on-teal);
+  }
+
+  .service-hero__grid {
+    display: grid;
+    min-height: clamp(28rem, 70vh, 40rem);
+  }
+
+  .service-hero__content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: var(--space-5);
+    padding: clamp(var(--space-12), 8vw, var(--space-20)) var(--space-8);
+    max-width: 40rem;
+  }
+
+  .service-hero__area {
+    margin: 0;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--ink-on-teal-muted);
+  }
+
+  .service-hero__title {
+    margin: 0;
+    font-size: clamp(2rem, 4.5vw, 3.25rem);
+  }
+
+  .service-hero__lead,
+  .service-hero__price {
+    margin: 0;
+    color: var(--ink-on-teal-muted);
+  }
+
+  .service-hero__price strong {
+    color: var(--ink-on-teal);
+  }
+
+  .service-hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    margin-top: var(--space-2);
+  }
+
+  .service-hero__media {
+    margin: 0;
+    min-height: 16rem;
+    overflow: hidden;
+  }
+
+  .service-hero__media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .service-included__grid {
+    display: grid;
+    gap: var(--space-10);
+  }
+
+  .service-included__title {
+    margin: 0 0 var(--space-3);
+    font-size: clamp(1.5rem, 3vw, 2rem);
+    color: var(--teal-deep);
+  }
+
+  .service-included__lead {
+    margin: 0;
+    max-width: 36ch;
+    color: var(--ink-secondary);
+  }
+
+  .service-included__list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  .service-included__list li {
+    position: relative;
+    padding-left: 1.25rem;
+    color: var(--ink);
+  }
+
+  .service-included__list li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0.55em;
+    width: 0.45rem;
+    height: 0.45rem;
+    border-radius: 50%;
+    background: var(--teal);
+  }
+
+  .service-trust__inner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-6);
+  }
+
+  .service-trust__statement {
+    margin: 0;
+    max-width: 32ch;
+    font-size: clamp(1.375rem, 3vw, 1.75rem);
+    color: var(--teal-deep);
+  }
+
+  .service-faq__title {
+    margin: 0 0 var(--space-8);
+    font-size: clamp(1.75rem, 3vw, 2.25rem);
+    color: var(--teal-deep);
+  }
+
+  .service-faq__list {
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  .service-faq__item {
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background: var(--ground);
+    overflow: hidden;
+  }
+
+  .service-faq__item summary {
+    padding: var(--space-5) var(--space-6);
+    font-weight: 600;
+    cursor: pointer;
+    list-style: none;
+  }
+
+  .service-faq__item summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .service-faq__item p {
+    margin: 0;
+    padding: 0 var(--space-6) var(--space-5);
+    color: var(--ink-secondary);
+  }
+
+  .service-cta__inner {
+    max-width: 36rem;
+  }
+
+  .service-cta__title {
+    margin: 0 0 var(--space-4);
+    font-size: clamp(2rem, 4vw, 2.75rem);
+    color: var(--ink-on-teal);
+  }
+
+  .service-cta__lead {
+    margin: 0 0 var(--space-6);
+    color: var(--ink-on-teal-muted);
+  }
+
+  @media (min-width: 900px) {
+    .service-hero__grid {
+      grid-template-columns: 1fr 1.05fr;
+    }
+
+    .service-included__grid {
+      grid-template-columns: 0.9fr 1.1fr;
+      align-items: start;
+    }
+  }
+
+  @media (max-width: 899px) {
+    .service-hero__media {
+      order: -1;
+      max-height: 18rem;
+    }
+  }
+</style>

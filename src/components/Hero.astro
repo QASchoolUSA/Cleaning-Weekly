@@ -1,0 +1,166 @@
+<section class="hero" aria-labelledby="hero-heading">
+  <div class="hero__grid">
+    <div class="hero__content">
+      <p class="hero__area mono">Central Florida · Home &amp; Office</p>
+      <h1 id="hero-heading" class="display hero__title">
+        Your local weekly cleaning — affordable, reliable, booked in minutes.
+      </h1>
+      <p class="hero__lead">
+        Recurring cleaning for homes and small offices across Central Florida.
+        Same trusted team, same day, every week — no gig-app surprises.
+      </p>
+      <div class="hero__actions">
+        <a class="btn btn--light" href="/book">Get a free quote</a>
+        <a class="btn btn--secondary" href="/#call">Call or text us</a>
+      </div>
+      <dl class="hero__proof">
+        <div>
+          <dt class="mono">Insured</dt>
+          <dd>Fully bonded &amp; covered</dd>
+        </div>
+        <div>
+          <dt class="mono">Vetted</dt>
+          <dd>Background-checked team</dd>
+        </div>
+        <div>
+          <dt class="mono">Local</dt>
+          <dd>All Central Florida cities</dd>
+        </div>
+      </dl>
+    </div>
+
+    <figure class="hero__media">
+      <img
+        src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1400&q=80"
+        alt="Bright Florida home with clean lines and natural light — the kind of space we maintain every week"
+        width="1400"
+        height="933"
+        fetchpriority="high"
+        decoding="async"
+      />
+    </figure>
+  </div>
+</section>
+
+<style>
+  .hero {
+    background: var(--teal-band);
+    color: var(--ink-on-teal);
+  }
+
+  .hero__grid {
+    display: grid;
+    min-height: clamp(32rem, 85vh, 44rem);
+  }
+
+  .hero__content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: var(--space-6);
+    padding: clamp(var(--space-12), 8vw, var(--space-20)) var(--space-8);
+    max-width: 40rem;
+    animation: hero-in 600ms var(--ease-out) both;
+  }
+
+  @keyframes hero-in {
+    from {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hero__content {
+      animation: none;
+    }
+  }
+
+  .hero__area {
+    margin: 0;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--ink-on-teal-muted);
+  }
+
+  .hero__title {
+    margin: 0;
+    font-size: clamp(2.25rem, 5vw, 3.75rem);
+  }
+
+  .hero__lead {
+    margin: 0;
+    max-width: 36ch;
+    font-size: 1.125rem;
+    line-height: 1.55;
+    color: var(--ink-on-teal-muted);
+  }
+
+  .hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    margin-top: var(--space-2);
+  }
+
+  .hero__proof {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--space-4);
+    margin: var(--space-4) 0 0;
+    padding-top: var(--space-6);
+    border-top: 1px solid oklch(100% 0 0 / 0.12);
+  }
+
+  .hero__proof dt {
+    margin: 0 0 var(--space-1);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    color: var(--ink-on-teal);
+  }
+
+  .hero__proof dd {
+    margin: 0;
+    font-size: 0.875rem;
+    line-height: 1.4;
+    color: var(--ink-on-teal-muted);
+  }
+
+  .hero__media {
+    position: relative;
+    margin: 0;
+    min-height: 16rem;
+    overflow: hidden;
+  }
+
+  .hero__media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  @media (min-width: 900px) {
+    .hero__grid {
+      grid-template-columns: 1fr 1.05fr;
+    }
+
+    .hero__content {
+      padding-inline: clamp(var(--space-8), 5vw, var(--space-16));
+    }
+  }
+
+  @media (max-width: 899px) {
+    .hero__media {
+      order: -1;
+      max-height: 18rem;
+    }
+  }
+</style>

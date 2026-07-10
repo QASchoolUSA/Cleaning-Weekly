@@ -1,0 +1,41 @@
+---
+export const prerender = true;
+
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Header from "../components/Header.astro";
+import Hero from "../components/Hero.astro";
+import TrustBar from "../components/TrustBar.astro";
+import Services from "../components/Services.astro";
+import HowItWorks from "../components/HowItWorks.astro";
+import BookCta from "../components/BookCta.astro";
+import CallSection from "../components/CallSection.astro";
+import FAQ from "../components/FAQ.astro";
+import Footer from "../components/Footer.astro";
+---
+
+<BaseLayout>
+  <a class="sr-only" href="#main">Skip to main content</a>
+  <Header />
+  <main id="main">
+    <Hero />
+    <TrustBar />
+    <Services />
+    <HowItWorks />
+    <BookCta />
+    <CallSection />
+    <FAQ />
+  </main>
+  <Footer />
+
+  <script type="application/ld+json" set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "LocalBusiness",
+    name: "Cleaning Weekly",
+    description: "Affordable, reliable weekly home and office cleaning across Central Florida.",
+    areaServed: {
+      "@type": "AdministrativeArea",
+      name: "Central Florida",
+    },
+    serviceType: ["House cleaning", "Office cleaning", "Recurring cleaning"],
+  })} />
+</BaseLayout>

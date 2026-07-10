@@ -1,0 +1,123 @@
+---
+import { services } from "../data/services";
+---
+
+<section id="services" class="services section" aria-labelledby="services-heading">
+  <div class="container">
+    <div class="services__intro">
+      <h2 id="services-heading" class="display services__title">
+        Weekly cleaning that fits your space
+      </h2>
+      <p class="services__lead">
+        Six services across Central Florida — each with transparent online pricing
+        and the same trusted local team.
+      </p>
+    </div>
+
+    <ul class="services__grid">
+      {services.map((service) => (
+        <li class="services__card">
+          <a href={`/services/${service.slug}`} class="services__link">
+            <span class="services__name headline">{service.title}</span>
+            <span class="services__desc">{service.description}</span>
+            <span class="services__price mono">
+              From ${service.startingPrice}/{service.priceUnit === "week" ? "week" : service.priceUnit === "visit" ? "visit" : "project"}
+            </span>
+          </a>
+        </li>
+      ))}
+    </ul>
+
+    <div class="services__footer">
+      <a class="btn btn--primary" href="/book">Compare services &amp; book</a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .services__intro {
+    max-width: 38rem;
+    margin-bottom: clamp(var(--space-10), 5vw, var(--space-14));
+  }
+
+  .services__title {
+    margin: 0 0 var(--space-4);
+    font-size: clamp(2rem, 4vw, 3rem);
+    color: var(--teal-deep);
+  }
+
+  .services__lead {
+    margin: 0;
+    font-size: 1.125rem;
+    color: var(--ink-secondary);
+  }
+
+  .services__grid {
+    display: grid;
+    gap: var(--space-4);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .services__link {
+    display: grid;
+    gap: var(--space-2);
+    height: 100%;
+    padding: var(--space-6);
+    text-decoration: none;
+    color: inherit;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    transition:
+      border-color var(--duration) var(--ease-out),
+      transform var(--duration) var(--ease-out);
+  }
+
+  .services__link:hover {
+    border-color: var(--teal-soft);
+    transform: translateY(-2px);
+  }
+
+  .services__name {
+    margin: 0;
+    font-size: 1.25rem;
+    color: var(--teal-deep);
+  }
+
+  .services__desc {
+    font-size: 0.9375rem;
+    color: var(--ink-secondary);
+    line-height: 1.5;
+  }
+
+  .services__price {
+    margin-top: auto;
+    padding-top: var(--space-2);
+    font-size: 0.875rem;
+    color: var(--ink);
+  }
+
+  .services__footer {
+    margin-top: clamp(var(--space-10), 5vw, var(--space-14));
+  }
+
+  @media (min-width: 640px) {
+    .services__grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .services__grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .services__link:hover {
+      transform: none;
+    }
+  }
+</style>

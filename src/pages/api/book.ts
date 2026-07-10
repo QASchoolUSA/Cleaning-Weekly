@@ -1,0 +1,87 @@
+export const prerender = false;
+
+import type { APIRoute } from "astro";
+import { calculatePrice } from "../../lib/pricing";
+import { bookingPayloadSchema } from "../../lib/schemas";
+import { generateBookingId, saveBooking } from "../../lib/bookings";
+import { sendBookingEmails } from "../../lib/mail";
+import { getServiceBySlug } from "../../data/services";
+
+export const POST: APIRoute = async ({ request }) => {
+  try {
+    const body = await request.json();
+    const parsed = bookingPayloadSchema.safeParse(body);
+
+    if (!parsed.success) {
+      return new Response(
+        JSON.stringify({
+          ok: false,
+          error: "Validation failed",
+          details: parsed.error.flatten().fieldErrors,
+        }),
+        { status: 400, headers: { "Content-Type": "application/json" } },
+      );
+    }
+
+    const payload = parsed.data;
+    const service = getServiceBySlug(payload.serviceSlug);
+    if (!service) {
+      return new Response(JSON.stringify({ ok: false, error: "Unknown service" }), {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    const pricing = calculatePrice(payload.serviceSlug, payload.pricingDetails);
+    if (!pricing) {
+      return new Response(JSON.stringify({ ok: false, error: "Could not calculate price" }), {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    const preferredDate = new Date(`${payload.preferredDate}T12:00:00`);
+    const tomorrow = new Date();
+    tomorrow.setHours(0, 0, 0, 0);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    if (preferredDate < tomorrow) {
+      return new Response(
+        JSON.stringify({ ok: false, error: "Preferred date must be tomorrow or later" }),
+        { status: 400, headers: { "Content-Type": "application/json" } },
+      );
+    }
+
+    const booking = {
+      ...payload,
+      id: generateBookingId(),
+      createdAt: new Date().toISOString(),
+      estimatedPrice: pricing.total,
+      priceUnit: pricing.unit,
+      serviceTitle: pricing.serviceTitle,
+      lineItems: pricing.lineItems,
+      emailsSent: false,
+    };
+
+    const emailsSent = await sendBookingEmails(booking);
+    booking.emailsSent = emailsSent;
+
+    await saveBooking(booking);
+
+    return new Response(
+      JSON.stringify({
+        ok: true,
+        bookingId: booking.id,
+        estimatedPrice: booking.estimatedPrice,
+        priceUnit: booking.priceUnit,
+        emailsSent,
+      }),
+      { status: 200, headers: { "Content-Type": "application/json" } },
+    );
+  } catch (error) {
+    console.error("[api/book]", error);
+    return new Response(JSON.stringify({ ok: false, error: "Server error" }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+};

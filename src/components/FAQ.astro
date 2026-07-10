@@ -1,0 +1,102 @@
+<section id="faq" class="faq section" aria-labelledby="faq-heading">
+  <div class="container container--narrow">
+    <h2 id="faq-heading" class="display faq__title">Common questions</h2>
+
+    <div class="faq__list">
+      <details class="faq__item">
+        <summary>Do you clean both homes and offices?</summary>
+        <p>
+          Yes. Residential and commercial spaces are both part of our weekly
+          service. We will tailor the checklist to your layout — open offices,
+          suites, and family homes all work.
+        </p>
+      </details>
+
+      <details class="faq__item">
+        <summary>Will I get the same cleaners every week?</summary>
+        <p>
+          That is the goal. We assign a consistent team to your space so they
+          learn your preferences and show up on schedule without re-explaining
+          the details each visit.
+        </p>
+      </details>
+
+      <details class="faq__item">
+        <summary>How does pricing work?</summary>
+        <p>
+          We quote a flat weekly rate based on your space size and service type.
+          No surge pricing, no last-minute add-ons at the door. Your quote email
+          spells out exactly what is included.
+        </p>
+      </details>
+
+      <details class="faq__item">
+        <summary>What areas do you serve?</summary>
+        <p>
+          All Central Florida cities — Orlando, Winter Park, Kissimmee, Sanford,
+          Apopka, Oviedo, and surrounding communities. Not sure if you are in
+          range? Send a quote request with your city.
+        </p>
+      </details>
+
+      <details class="faq__item">
+        <summary>Are your cleaners insured and background-checked?</summary>
+        <p>
+          Yes. Every team member is background-checked, and Cleaning Weekly
+          carries insurance for residential and commercial work. We are happy to
+          provide proof before your first visit.
+        </p>
+      </details>
+    </div>
+  </div>
+</section>
+
+<style>
+  .faq__title {
+    margin: 0 0 clamp(var(--space-8), 4vw, var(--space-12));
+    font-size: clamp(2rem, 4vw, 2.75rem);
+    color: var(--teal-deep);
+  }
+
+  .faq__list {
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  .faq__item {
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background: var(--ground);
+    overflow: hidden;
+  }
+
+  .faq__item summary {
+    padding: var(--space-5) var(--space-6);
+    font-weight: 600;
+    cursor: pointer;
+    list-style: none;
+    color: var(--ink);
+  }
+
+  .faq__item summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .faq__item summary::after {
+    content: "+";
+    float: right;
+    font-family: var(--font-mono);
+    color: var(--teal);
+  }
+
+  .faq__item[open] summary::after {
+    content: "−";
+  }
+
+  .faq__item p {
+    margin: 0;
+    padding: 0 var(--space-6) var(--space-5);
+    color: var(--ink-secondary);
+    max-width: 60ch;
+  }
+</style>

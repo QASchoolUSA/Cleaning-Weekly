@@ -1,0 +1,140 @@
+<section id="how-it-works" class="how section section--teal" aria-labelledby="how-heading">
+  <div class="container">
+    <div class="how__header">
+      <h2 id="how-heading" class="display how__title">Three steps to a cleaner week</h2>
+      <p class="how__lead">
+        No app downloads, no bidding wars, no surprise fees at checkout.
+      </p>
+    </div>
+
+    <ol class="how__steps">
+      <li class="how__step">
+        <span class="how__num mono" aria-hidden="true">01</span>
+        <div>
+          <h3 class="headline">Tell us about your space</h3>
+          <p>
+            Share your city, home or office size, and any priorities — pets,
+            floors, high-traffic areas. Takes about two minutes.
+          </p>
+        </div>
+      </li>
+      <li class="how__step">
+        <span class="how__num mono" aria-hidden="true">02</span>
+        <div>
+          <h3 class="headline">Get your free quote</h3>
+          <p>
+            We respond with a clear weekly rate. What we quote is what you pay —
+            no surge pricing, no hidden add-ons.
+          </p>
+        </div>
+      </li>
+      <li class="how__step">
+        <span class="how__num mono" aria-hidden="true">03</span>
+        <div>
+          <h3 class="headline">Same team, every week</h3>
+          <p>
+            Your assigned cleaners learn your space and show up on schedule.
+            Prefer to talk first? Call us anytime.
+          </p>
+        </div>
+      </li>
+    </ol>
+
+    <figure class="how__photo">
+      <img
+        src="https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=1200&q=80"
+        alt="Professional cleaner carefully wiping a home surface — the same careful work every visit"
+        width="1200"
+        height="800"
+        loading="lazy"
+        decoding="async"
+      />
+    </figure>
+  </div>
+</section>
+
+<style>
+  .how__header {
+    max-width: 32rem;
+    margin-bottom: clamp(var(--space-10), 5vw, var(--space-16));
+  }
+
+  .how__title {
+    margin: 0 0 var(--space-4);
+    font-size: clamp(2rem, 4vw, 2.75rem);
+    color: var(--ink-on-teal);
+  }
+
+  .how__lead {
+    margin: 0;
+    color: var(--ink-on-teal-muted);
+    font-size: 1.0625rem;
+  }
+
+  .how__steps {
+    display: grid;
+    gap: clamp(var(--space-8), 4vw, var(--space-12));
+    margin: 0 0 clamp(var(--space-12), 6vw, var(--space-16));
+    padding: 0;
+    list-style: none;
+    counter-reset: none;
+  }
+
+  .how__step {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: var(--space-5);
+    align-items: start;
+    padding-bottom: clamp(var(--space-8), 4vw, var(--space-10));
+    border-bottom: 1px solid oklch(100% 0 0 / 0.12);
+  }
+
+  .how__step:last-child {
+    padding-bottom: 0;
+    border-bottom: none;
+  }
+
+  .how__num {
+    font-size: 0.875rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    color: var(--ink-on-teal-muted);
+  }
+
+  .how__step h3 {
+    margin: 0 0 var(--space-2);
+    font-size: 1.375rem;
+    color: var(--ink-on-teal);
+  }
+
+  .how__step p {
+    margin: 0;
+    max-width: 46ch;
+    color: var(--ink-on-teal-muted);
+  }
+
+  .how__photo {
+    margin: 0;
+    overflow: hidden;
+    border-radius: var(--radius-lg);
+  }
+
+  .how__photo img {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+  }
+
+  @media (min-width: 768px) {
+    .how__steps {
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-8);
+    }
+
+    .how__step {
+      grid-template-columns: 1fr;
+      padding-bottom: 0;
+      border-bottom: none;
+    }
+  }
+</style>

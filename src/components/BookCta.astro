@@ -1,0 +1,113 @@
+<section id="book-cta" class="book-cta section" aria-labelledby="book-cta-heading">
+  <div class="container book-cta__grid">
+    <div>
+      <h2 id="book-cta-heading" class="display book-cta__title">Get your quote in minutes</h2>
+      <p class="book-cta__lead">
+        Use our booking calculator for an instant estimate, choose your start date,
+        and confirm online — no waiting for a callback.
+      </p>
+      <ul class="book-cta__checks">
+        <li>Instant pricing for all six services</li>
+        <li>Pick your preferred start date and time window</li>
+        <li>Confirmation email to you and our team</li>
+      </ul>
+    </div>
+    <div class="book-cta__panel">
+      <p class="book-cta__label mono">Fastest path</p>
+      <p class="book-cta__steps">Service → details → estimate → schedule → book</p>
+      <a class="btn btn--primary book-cta__button" href="/book">Start booking calculator</a>
+      <p class="book-cta__alt">
+        Prefer to talk first? <a href="/#call">Call or text us</a>
+      </p>
+    </div>
+  </div>
+</section>
+
+<style>
+  .book-cta__grid {
+    display: grid;
+    gap: clamp(var(--space-10), 5vw, var(--space-16));
+    align-items: center;
+  }
+
+  .book-cta__title {
+    margin: 0 0 var(--space-4);
+    font-size: clamp(2rem, 4vw, 2.75rem);
+    color: var(--teal-deep);
+  }
+
+  .book-cta__lead {
+    margin: 0 0 var(--space-6);
+    max-width: 38ch;
+    color: var(--ink-secondary);
+    font-size: 1.0625rem;
+  }
+
+  .book-cta__checks {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  .book-cta__checks li {
+    position: relative;
+    padding-left: 1.25rem;
+    color: var(--ink);
+  }
+
+  .book-cta__checks li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0.55em;
+    width: 0.45rem;
+    height: 0.45rem;
+    border-radius: 50%;
+    background: var(--teal);
+  }
+
+  .book-cta__panel {
+    padding: clamp(var(--space-6), 4vw, var(--space-10));
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+  }
+
+  .book-cta__label {
+    margin: 0 0 var(--space-2);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--teal-deep);
+  }
+
+  .book-cta__steps {
+    margin: 0 0 var(--space-6);
+    color: var(--ink-secondary);
+  }
+
+  .book-cta__button {
+    width: 100%;
+    margin-bottom: var(--space-4);
+  }
+
+  .book-cta__alt {
+    margin: 0;
+    font-size: 0.9375rem;
+    color: var(--ink-secondary);
+  }
+
+  .book-cta__alt a {
+    color: var(--teal-deep);
+    font-weight: 600;
+  }
+
+  @media (min-width: 900px) {
+    .book-cta__grid {
+      grid-template-columns: 1.1fr 0.9fr;
+    }
+  }
+</style>

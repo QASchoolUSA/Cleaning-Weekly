@@ -1,0 +1,47 @@
+---
+export const prerender = true;
+
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Header from "../../components/Header.astro";
+import Footer from "../../components/Footer.astro";
+import ServicePageContent from "../../components/ServicePageContent.astro";
+import { services } from "../../data/services";
+
+export function getStaticPaths() {
+  return services.map((service) => ({
+    params: { slug: service.slug },
+    props: { service },
+  }));
+}
+
+const { service } = Astro.props;
+---
+
+<BaseLayout
+  title={`${service.title} — Cleaning Weekly | Central Florida`}
+  description={service.metaDescription}
+>
+  <a class="sr-only" href="#main">Skip to main content</a>
+  <Header />
+  <main id="main">
+    <ServicePageContent service={service} />
+  </main>
+  <Footer />
+
+  <script type="application/ld+json" set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "Service",
+    name: service.title,
+    description: service.description,
+    provider: {
+      "@type": "LocalBusiness",
+      name: "Cleaning Weekly",
+      areaServed: "Central Florida",
+    },
+    offers: {
+      "@type": "Offer",
+      price: service.startingPrice,
+      priceCurrency: "USD",
+    },
+  })} />
+</BaseLayout>

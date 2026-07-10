@@ -1,0 +1,145 @@
+---
+import { services } from "../data/services";
+---
+
+<header class="site-header">
+  <div class="container site-header__inner">
+    <a class="site-header__logo" href="/">
+      <span class="site-header__mark" aria-hidden="true"></span>
+      <span class="site-header__name">Cleaning Weekly</span>
+    </a>
+
+    <nav class="site-header__nav" aria-label="Primary">
+      <details class="site-header__services">
+        <summary>Services</summary>
+        <ul class="site-header__menu">
+          {services.map((service) => (
+            <li>
+              <a href={`/services/${service.slug}`}>{service.title}</a>
+            </li>
+          ))}
+        </ul>
+      </details>
+      <a href="/book">Book now</a>
+      <a href="/#how-it-works">How it works</a>
+      <a href="/#faq">FAQ</a>
+      <a href="/#call">Call us</a>
+    </nav>
+
+    <div class="site-header__actions">
+      <a class="btn btn--ghost site-header__quote" href="/book">Get a quote</a>
+    </div>
+  </div>
+</header>
+
+<style>
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: var(--z-sticky);
+    background: oklch(99% 0.006 195 / 0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .site-header__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-6);
+    min-height: 4.25rem;
+  }
+
+  .site-header__logo {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    font-family: var(--font-display);
+    font-size: 1.125rem;
+    font-weight: 600;
+    text-decoration: none;
+    color: var(--teal-deep);
+  }
+
+  .site-header__mark {
+    width: 1.75rem;
+    height: 1.75rem;
+    border-radius: var(--radius-sm);
+    background: var(--teal-band);
+    box-shadow: inset 0 0 0 2px oklch(100% 0 0 / 0.12);
+  }
+
+  .site-header__nav {
+    display: none;
+    align-items: center;
+    gap: var(--space-5);
+  }
+
+  .site-header__nav > a {
+    font-size: 0.9375rem;
+    font-weight: 500;
+    text-decoration: none;
+    color: var(--ink-secondary);
+    transition: color var(--duration) var(--ease-out);
+  }
+
+  .site-header__nav > a:hover {
+    color: var(--teal-deep);
+  }
+
+  .site-header__services {
+    position: relative;
+  }
+
+  .site-header__services summary {
+    font-size: 0.9375rem;
+    font-weight: 500;
+    color: var(--ink-secondary);
+    cursor: pointer;
+    list-style: none;
+  }
+
+  .site-header__services summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .site-header__menu {
+    position: absolute;
+    top: calc(100% + 0.5rem);
+    left: 0;
+    min-width: 14rem;
+    margin: 0;
+    padding: var(--space-2);
+    list-style: none;
+    background: var(--ground);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    box-shadow: 0 8px 24px oklch(22% 0.02 195 / 0.08);
+  }
+
+  .site-header__menu a {
+    display: block;
+    padding: var(--space-2) var(--space-3);
+    font-size: 0.9375rem;
+    text-decoration: none;
+    color: var(--ink);
+    border-radius: var(--radius-sm);
+  }
+
+  .site-header__menu a:hover {
+    background: var(--surface);
+    color: var(--teal-deep);
+  }
+
+  .site-header__quote {
+    min-height: 2.5rem;
+    padding-inline: 1rem;
+    font-size: 0.9375rem;
+  }
+
+  @media (min-width: 900px) {
+    .site-header__nav {
+      display: flex;
+    }
+  }
+</style>
