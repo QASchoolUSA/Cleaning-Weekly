@@ -21,14 +21,21 @@ let showServiceChip = skippedServicePicker;
 
 let state = getInitialState(initialService);
 
+const shell = document.getElementById("booking-wizard")!;
+const bookPage = document.getElementById("main")!;
 const stepContainer = document.getElementById("wizard-step")!;
 const progressFill = document.getElementById("wizard-progress-fill")!;
 const progressTrack = progressFill.parentElement as HTMLElement;
 const progressLabel = document.getElementById("wizard-progress-label")!;
-const priceStrip = document.getElementById("wizard-price-strip")!;
+const estimateHost = document.getElementById("wizard-estimate")!;
 const backBtn = document.getElementById("wizard-back") as HTMLButtonElement;
 const nextBtn = document.getElementById("wizard-next") as HTMLButtonElement;
 const errorBanner = document.getElementById("wizard-error")!;
+
+function setHasEstimate(hasEstimate: boolean) {
+  shell.classList.toggle("book-shell--has-estimate", hasEstimate);
+  bookPage.classList.toggle("book-page--has-estimate", hasEstimate);
+}
 
 const TOTAL_STEPS = STEP_LABELS.length;
 
@@ -78,7 +85,7 @@ function renderProgress() {
     `Step ${state.step} of ${TOTAL_STEPS}: ${currentLabel}`,
   );
 
-  renderPriceStrip();
+  renderEstimate();
 }
 
 function renderPriceBreakdown(): string {
@@ -87,9 +94,9 @@ function renderPriceBreakdown(): string {
   if (!estimate) return "";
 
   return `
-    <details class="wizard-price-breakdown">
+    <details class="wizard-breakdown">
       <summary>See price breakdown</summary>
-      <table class="wizard-price-breakdown__table">
+      <table class="wizard-breakdown__table">
         <tbody>
           ${estimate.lineItems
             .map(
@@ -102,32 +109,37 @@ function renderPriceBreakdown(): string {
     </details>`;
 }
 
-function renderPriceStrip() {
+function updateStep2Breakdown() {
+  const host = document.getElementById("wizard-breakdown-host");
+  if (!host) return;
+  host.innerHTML = renderPriceBreakdown();
+}
+
+function renderEstimate() {
   if (state.step < 2) {
-    priceStrip.hidden = true;
-    priceStrip.innerHTML = "";
+    estimateHost.hidden = true;
+    estimateHost.innerHTML = "";
+    setHasEstimate(false);
     return;
   }
 
   state = updateEstimate(state);
   const estimate = state.estimate;
   if (!estimate) {
-    priceStrip.hidden = true;
-    priceStrip.innerHTML = "";
+    estimateHost.hidden = true;
+    estimateHost.innerHTML = "";
+    setHasEstimate(false);
     return;
   }
 
-  priceStrip.hidden = false;
-  const breakdown =
-    state.step === 2 ? renderPriceBreakdown() : "";
-
-  priceStrip.innerHTML = `
-    <div class="wizard-price-strip__main">
-      <p class="wizard-price-strip__label">Your estimate</p>
-      <p class="wizard-price-strip__price mono">${formatEstimate(state)}</p>
-      <p class="wizard-price-strip__service">${estimate.serviceTitle}</p>
-    </div>
-    ${breakdown}`;
+  estimateHost.hidden = false;
+  setHasEstimate(true);
+  estimateHost.innerHTML = `
+    <div class="wizard-estimate__main">
+      <p class="wizard-estimate__label">Your estimate</p>
+      <p class="wizard-estimate__price mono">${formatEstimate(state)}</p>
+      <p class="wizard-estimate__service">${escapeHtml(estimate.serviceTitle)}</p>
+    </div>`;
 }
 
 function fieldHint(fieldId: string): string {
@@ -150,7 +162,7 @@ function renderStepperField(
   const hintHtml = hint ? `<p class="field-hint">${hint}</p>` : "";
 
   return `
-    <div class="field">
+    <div class="field field--stepper">
       <label for="field-${field.id}">${field.label}</label>
       <div class="wizard-stepper">
         <button
@@ -161,7 +173,7 @@ function renderStepperField(
           aria-label="Remove ${field.label.toLowerCase()}"
           ${numValue <= min ? "disabled" : ""}
         >−</button>
-        <span class="wizard-stepper__value mono" aria-live="polite">${numValue}</span>
+        <span class="wizard-stepper__value mono" data-stepper-value="${field.id}" aria-live="polite">${numValue}</span>
         <button
           type="button"
           class="wizard-stepper__btn"
@@ -182,6 +194,7 @@ function renderStepperField(
           step="${field.step ?? 1}"
           tabindex="-1"
           aria-hidden="true"
+          readonly
         />
       </div>
       ${hintHtml}
@@ -231,8 +244,10 @@ function renderStep1() {
         <label class="wizard-service ${state.serviceSlug === service.slug ? "is-selected" : ""}">
           <input type="radio" name="serviceSlug" value="${service.slug}" ${state.serviceSlug === service.slug ? "checked" : ""} />
           <span class="wizard-service__indicator" aria-hidden="true"></span>
-          <span class="wizard-service__title">${service.title}</span>
-          <span class="wizard-service__price mono">From $${service.startingPrice}/${priceUnitLabel(service.priceUnit)}</span>
+          <span class="wizard-service__copy">
+            <span class="wizard-service__title">${service.title}</span>
+            <span class="wizard-service__price mono">From $${service.startingPrice}/${priceUnitLabel(service.priceUnit)}</span>
+          </span>
         </label>`,
         )
         .join("")}
@@ -255,7 +270,8 @@ function renderStep2() {
   return `
     ${chipHtml}
     <h2 class="wizard-step__title">About your home</h2>
-    <div class="wizard-fields">${service.pricingFields.map((field) => renderField(field, state.pricingDetails[field.id] ?? field.defaultValue)).join("")}</div>`;
+    <div class="wizard-fields">${service.pricingFields.map((field) => renderField(field, state.pricingDetails[field.id] ?? field.defaultValue)).join("")}</div>
+    <div id="wizard-breakdown-host" class="wizard-breakdown-host">${renderPriceBreakdown()}</div>`;
 }
 
 function renderStep3() {
@@ -382,7 +398,9 @@ function showInlineErrors(errors: Record<string, string>) {
     }
     if (fieldEl instanceof HTMLElement) {
       fieldEl.setAttribute("aria-invalid", "true");
-      if (key === firstKey) fieldEl.focus();
+      if (key === firstKey && fieldEl.tabIndex !== -1 && !fieldEl.hasAttribute("aria-hidden")) {
+        fieldEl.focus();
+      }
     }
   }
 }
@@ -394,25 +412,32 @@ function bindStepListeners() {
         readStepInputs();
         stepContainer.innerHTML = renderStep1();
         bindStepListeners();
-        renderPriceStrip();
+        renderEstimate();
       });
     });
   }
 
   if (state.step === 2) {
-    stepContainer.querySelectorAll<HTMLSelectElement>("[data-pricing-field]").forEach((el) => {
+    stepContainer.querySelectorAll<HTMLSelectElement>("select[data-pricing-field]").forEach((el) => {
       el.addEventListener("change", () => {
         readPricingFieldsOnly();
-        renderPriceStrip();
+        renderEstimate();
+        updateStep2Breakdown();
       });
     });
 
     stepContainer.querySelectorAll<HTMLButtonElement>("[data-stepper-dec]").forEach((btn) => {
-      btn.addEventListener("click", () => adjustStepper(btn.dataset.field!, -1));
+      btn.addEventListener("click", (event) => {
+        event.preventDefault();
+        adjustStepper(btn.dataset.field!, -1);
+      });
     });
 
     stepContainer.querySelectorAll<HTMLButtonElement>("[data-stepper-inc]").forEach((btn) => {
-      btn.addEventListener("click", () => adjustStepper(btn.dataset.field!, 1));
+      btn.addEventListener("click", (event) => {
+        event.preventDefault();
+        adjustStepper(btn.dataset.field!, 1);
+      });
     });
 
     const changeBtn = stepContainer.querySelector<HTMLButtonElement>("[data-change-service]");
@@ -440,9 +465,20 @@ function adjustStepper(fieldId: string, direction: -1 | 1) {
   state.pricingDetails[fieldId] = next;
   state = updateEstimate(state);
 
-  stepContainer.innerHTML = renderStep2();
-  bindStepListeners();
-  renderPriceStrip();
+  const valueEl = stepContainer.querySelector(`[data-stepper-value="${fieldId}"]`);
+  if (valueEl) valueEl.textContent = String(next);
+
+  const decBtn = stepContainer.querySelector<HTMLButtonElement>(
+    `[data-stepper-dec][data-field="${fieldId}"]`,
+  );
+  const incBtn = stepContainer.querySelector<HTMLButtonElement>(
+    `[data-stepper-inc][data-field="${fieldId}"]`,
+  );
+  if (decBtn) decBtn.disabled = next <= min;
+  if (incBtn) incBtn.disabled = next >= max;
+
+  renderEstimate();
+  updateStep2Breakdown();
 }
 
 function readPricingFieldsOnly() {

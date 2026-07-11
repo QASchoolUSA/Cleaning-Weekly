@@ -21,7 +21,7 @@ import "../../styles/booking-wizard.css";
       </header>
 
       <div id="booking-wizard" class="book-shell">
-        <div class="book-shell__main">
+        <div class="book-shell__body">
           <div class="book-shell__progress">
             <p id="wizard-progress-label" class="book-progress-label"></p>
             <div class="book-progress-track" role="progressbar" aria-valuemin="1" aria-valuemax="4">
@@ -31,9 +31,10 @@ import "../../styles/booking-wizard.css";
 
           <div id="wizard-error" class="wizard-error" role="alert" hidden></div>
           <div id="wizard-step" class="wizard-step"></div>
+        </div>
 
-          <div id="wizard-price-strip" class="wizard-price-strip" hidden></div>
-
+        <div class="book-shell__chrome">
+          <div id="wizard-estimate" class="wizard-estimate" hidden></div>
           <div class="book-shell__actions">
             <button id="wizard-back" class="btn btn--ghost" type="button" hidden>Back</button>
             <button id="wizard-next" class="btn btn--primary" type="button">Next</button>
