@@ -63,10 +63,15 @@ export const POST: APIRoute = async ({ request }) => {
       emailsSent: false,
     };
 
+    // Emails + local JSON are best-effort (Node SMTP/fs). On Cloudflare Workers
+    // persistence is Booking Broom when configured — never fail the booking on those.
     const emailsSent = await sendBookingEmails(booking);
     booking.emailsSent = emailsSent;
 
-    await saveBooking(booking);
+    const savedLocally = await saveBooking(booking);
+    if (!savedLocally) {
+      console.info("[api/book] Local bookings.json skip for", booking.id);
+    }
 
     const broom = await forwardToBookingBroom(booking);
     if (broom.error) {

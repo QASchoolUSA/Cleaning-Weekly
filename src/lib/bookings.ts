@@ -1,29 +1,16 @@
-import { mkdir, readFile, writeFile } from "node:fs/promises";
-import path from "node:path";
 import type { StoredBooking } from "./schemas";
 
-const DATA_DIR = path.join(process.cwd(), "data");
-const BOOKINGS_FILE = path.join(DATA_DIR, "bookings.json");
-
-async function ensureDataFile(): Promise<void> {
-  await mkdir(DATA_DIR, { recursive: true });
-  try {
-    await readFile(BOOKINGS_FILE, "utf-8");
-  } catch {
-    await writeFile(BOOKINGS_FILE, "[]\n", "utf-8");
-  }
-}
-
-export async function readBookings(): Promise<StoredBooking[]> {
-  await ensureDataFile();
-  const raw = await readFile(BOOKINGS_FILE, "utf-8");
-  return JSON.parse(raw) as StoredBooking[];
-}
-
-export async function saveBooking(booking: StoredBooking): Promise<void> {
-  const bookings = await readBookings();
-  bookings.push(booking);
-  await writeFile(BOOKINGS_FILE, `${JSON.stringify(bookings, null, 2)}\n`, "utf-8");
+/**
+ * Local JSON persistence is Node-only. Cloudflare Workers have no writable
+ * filesystem, so this is intentionally a no-op. Production persistence is
+ * Booking Broom (BOOKING_BROOM_URL / BOOKING_BROOM_API_KEY).
+ */
+export async function saveBooking(booking: StoredBooking): Promise<boolean> {
+  console.info(
+    "[bookings] Skipping local file save (Workers-compatible runtime):",
+    booking.id,
+  );
+  return false;
 }
 
 export function generateBookingId(): string {
