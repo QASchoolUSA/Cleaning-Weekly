@@ -38,6 +38,18 @@ function setHasEstimate(hasEstimate: boolean) {
 }
 
 const TOTAL_STEPS = STEP_LABELS.length;
+let hasMounted = false;
+
+function scrollStepIntoView() {
+  const target =
+    document.querySelector<HTMLElement>(".book-shell__body") ?? shell;
+  const prefersReduced =
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  target.scrollIntoView({
+    block: "start",
+    behavior: prefersReduced ? "auto" : "smooth",
+  });
+}
 
 function escapeHtml(value: string): string {
   return value
@@ -516,6 +528,12 @@ function renderStep() {
   backBtn.textContent = state.step === 4 ? "Back to edit" : "Back";
   nextBtn.textContent = state.step === 4 ? "Book my cleaning" : "Next";
   nextBtn.disabled = false;
+
+  if (hasMounted) {
+    scrollStepIntoView();
+  } else {
+    hasMounted = true;
+  }
 }
 
 function readStepInputs() {
