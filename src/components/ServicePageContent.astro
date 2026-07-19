@@ -52,6 +52,21 @@ const bookUrl = `/book?service=${service.slug}`;
   </div>
 </section>
 
+<section class="service-local section">
+  <div class="container service-local__grid">
+    <div class="service-local__copy">
+      <h2 class="headline service-included__title">How does {service.shortTitle.toLowerCase()} cleaning work in Central Florida?</h2>
+      {service.localDetails.map((paragraph) => <p>{paragraph}</p>)}
+    </div>
+    <aside class="service-local__aside">
+      <h3 class="headline">This service is a good fit for</h3>
+      <ul>
+        {service.bestFor.map((item) => <li>{item}</li>)}
+      </ul>
+    </aside>
+  </div>
+</section>
+
 <section class="service-trust section section--surface">
   <div class="container service-trust__inner">
     <p class="headline service-trust__statement">
@@ -198,6 +213,32 @@ const bookUrl = `/book?service=${service.slug}`;
     gap: var(--space-6);
   }
 
+  .service-local__grid {
+    display: grid;
+    gap: var(--space-8);
+  }
+
+  .service-local__copy p {
+    color: var(--ink-secondary);
+    line-height: 1.75;
+  }
+
+  .service-local__aside {
+    padding: var(--space-6);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: var(--surface);
+  }
+
+  .service-local__aside h3 {
+    margin-top: 0;
+    color: var(--teal-deep);
+  }
+
+  .service-local__aside li + li {
+    margin-top: var(--space-3);
+  }
+
   .service-trust__statement {
     margin: 0;
     max-width: 32ch;
@@ -262,6 +303,11 @@ const bookUrl = `/book?service=${service.slug}`;
 
     .service-included__grid {
       grid-template-columns: 0.9fr 1.1fr;
+      align-items: start;
+    }
+
+    .service-local__grid {
+      grid-template-columns: 1.35fr 0.65fr;
       align-items: start;
     }
   }

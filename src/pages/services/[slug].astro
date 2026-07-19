@@ -6,7 +6,7 @@ import Header from "../../components/Header.astro";
 import Footer from "../../components/Footer.astro";
 import ServicePageContent from "../../components/ServicePageContent.astro";
 import { services } from "../../data/services";
-import { breadcrumbJsonLd, servicePageJsonLd } from "../../lib/schema";
+import { breadcrumbJsonLd, faqPageJsonLd, servicePageJsonLd } from "../../lib/schema";
 
 export function getStaticPaths() {
   return services.map((service) => ({
@@ -34,6 +34,10 @@ const path = `/services/${service.slug}`;
   <script
     type="application/ld+json"
     set:html={JSON.stringify(servicePageJsonLd(service))}
+  />
+  <script
+    type="application/ld+json"
+    set:html={JSON.stringify(faqPageJsonLd(service.faq))}
   />
   <script
     type="application/ld+json"

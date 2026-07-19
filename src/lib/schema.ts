@@ -40,7 +40,9 @@ export function organizationGraph() {
     },
     description: siteConfig.description,
     email: siteConfig.email,
-    telephone: siteConfig.telephoneE164,
+    ...(siteConfig.telephoneE164
+      ? { telephone: siteConfig.telephoneE164 }
+      : {}),
     address: {
       "@type": "PostalAddress",
       addressLocality: siteConfig.address.addressLocality,
@@ -48,7 +50,7 @@ export function organizationGraph() {
       addressCountry: siteConfig.address.addressCountry,
     },
     areaServed: areaServedNodes(),
-    sameAs: [...siteConfig.sameAs],
+    ...(siteConfig.sameAs.length > 0 ? { sameAs: [...siteConfig.sameAs] } : {}),
     knowsAbout: [
       "Weekly house cleaning",
       "Apartment cleaning",
@@ -105,7 +107,9 @@ export function professionalServiceGraph() {
     image: absoluteUrl(siteConfig.ogImagePath),
     provider: { "@id": orgId },
     priceRange: siteConfig.priceRange,
-    telephone: siteConfig.telephoneE164,
+    ...(siteConfig.telephoneE164
+      ? { telephone: siteConfig.telephoneE164 }
+      : {}),
     currenciesAccepted: "USD",
     paymentAccepted: "Credit Card, Debit Card",
     openingHoursSpecification: [
@@ -242,6 +246,27 @@ export function faqPageJsonLd(
         "@type": "Answer",
         text: faq.answer,
       },
+    })),
+  };
+}
+
+export function howToJsonLd(opts: {
+  name: string;
+  description: string;
+  steps: { name: string; text: string }[];
+  url?: string;
+}) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "HowTo",
+    name: opts.name,
+    description: opts.description,
+    ...(opts.url ? { url: opts.url } : {}),
+    step: opts.steps.map((step, index) => ({
+      "@type": "HowToStep",
+      position: index + 1,
+      name: step.name,
+      text: step.text,
     })),
   };
 }

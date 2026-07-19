@@ -29,6 +29,8 @@ export interface ServiceDefinition {
   priceUnit: "week" | "visit" | "project";
   includedItems: string[];
   faq: { question: string; answer: string }[];
+  localDetails: string[];
+  bestFor: string[];
   pricingFields: PricingField[];
 }
 
@@ -53,6 +55,11 @@ export const services: ServiceDefinition[] = [
       "Dusting reachable surfaces and baseboards",
       "Trash emptied from main bins",
     ],
+    localDetails: [
+      "Weekly home cleaning is designed for occupied Central Florida homes that need a dependable reset before dust, pet hair, kitchen splatter, and bathroom film become a larger project. The visit concentrates on the rooms used every day, while occasional detail tasks can be rotated into the checklist.",
+      "Homes around Orlando, Winter Park, Sanford, Kissimmee, and nearby communities vary from compact apartments to multi-story houses. Share floor type, stairs, pets, entry instructions, and priority rooms before the first visit so the schedule reflects how your household actually lives.",
+    ],
+    bestFor: ["Families with full school-week schedules", "Homes with pets or frequent guests", "Clients who prefer a consistent weekly team", "Households maintaining a recent deep clean"],
     faq: [
       {
         question: "Do I need to be home during the clean?",
@@ -124,6 +131,11 @@ export const services: ServiceDefinition[] = [
       "Restroom restock and sanitizing",
       "Trash and recycling removal",
     ],
+    localDetails: [
+      "Recurring office cleaning keeps client-facing and shared spaces ready without interrupting the workday. The scope can prioritize reception areas, restrooms, break rooms, floors, touchpoints, and agreed workstation surfaces rather than applying a residential checklist to a commercial space.",
+      "Central Florida offices may need early-morning or after-hours access, alarm procedures, and building-specific waste rules. A clear site contact and supply-restocking list help each visit run consistently, especially in multi-suite buildings.",
+    ],
+    bestFor: ["Professional offices and small suites", "Reception areas with regular client traffic", "Teams that need after-hours service", "Workplaces wanting one predictable weekly invoice"],
     faq: [
       {
         question: "Do you clean after business hours?",
@@ -187,6 +199,11 @@ export const services: ServiceDefinition[] = [
       "Light fixture and ceiling fan dusting",
       "Extra bathroom scrub and grout attention",
     ],
+    localDetails: [
+      "Deep cleaning rebuilds the baseline when routine wiping no longer catches up. It gives extra time to baseboards, door frames, fans, fixtures, bathroom buildup, and kitchen detail work so later maintenance visits can focus on keeping the home comfortable.",
+      "Central Florida humidity and year-round air-conditioning can make dust collect around vents and moisture linger in bathrooms. Deep cleaning addresses visible buildup, but active leaks, extensive mold, pests, and hazardous materials require the appropriate specialist.",
+    ],
+    bestFor: ["First-time professional-cleaning clients", "Homes preparing for recurring service", "Seasonal resets after pollen or holidays", "Spaces with visible dust and bathroom buildup"],
     faq: [
       {
         question: "How is deep cleaning different from weekly service?",
@@ -247,6 +264,11 @@ export const services: ServiceDefinition[] = [
       "Floors vacuumed and mopped throughout",
       "Window sills and interior glass cleaned",
     ],
+    localDetails: [
+      "Move-in and move-out cleaning works best after boxes and furniture are removed. Empty cabinets, open floor area, and active water and electricity allow cleaners to reach the surfaces that landlords, buyers, and new residents inspect most closely.",
+      "Rental and home-sale timelines across Central Florida can be tight, so schedule the clean between the final move and key handoff whenever possible. Review your lease or walkthrough checklist first; carpet extraction, hauling, wall repair, and exterior pressure washing may need separate vendors.",
+    ],
+    bestFor: ["Renters preparing for a walkthrough", "Landlords between occupants", "Buyers wanting a clean start", "Sellers cleaning after movers leave"],
     faq: [
       {
         question: "Should the home be completely empty?",
@@ -307,6 +329,11 @@ export const services: ServiceDefinition[] = [
       "Cabinet interior and exterior wipe-down",
       "Debris bagging and disposal coordination",
     ],
+    localDetails: [
+      "Post-construction cleaning is a fine-dust and finish-detail service, not a substitute for contractor debris removal. It should begin after sanding, cutting, and punch-list work are complete so newly cleaned ledges, tracks, cabinets, and floors are not immediately coated again.",
+      "Renovations and new construction around Central Florida often leave drywall film in air returns, window tracks, cabinet interiors, and on horizontal surfaces. Share project photos and floor-care instructions before quoting; paint, adhesives, hazardous waste, and active construction may require specialist handling.",
+    ],
+    bestFor: ["Finished kitchen or bathroom renovations", "New-build final cleaning", "Homes after flooring or drywall work", "Contractors preparing for owner handoff"],
     faq: [
       {
         question: "When should post-construction cleaning happen?",
@@ -362,6 +389,11 @@ export const services: ServiceDefinition[] = [
       "Kitchen reset and dish check",
       "Damage report with photos on request",
     ],
+    localDetails: [
+      "Vacation-rental turnover cleaning is a deadline-driven reset between checkout and check-in. The team follows an agreed room checklist, reports visible concerns, and prepares beds, bathrooms, kitchens, and floors for the next arrival.",
+      "Hosts near Orlando attractions and across Central Florida should provide parking, gate codes, linen plans, owner-closet rules, restocking par levels, and the true turnover window. Keeping backup linens on site reduces the risk that laundry delays the entire clean.",
+    ],
+    bestFor: ["Airbnb and Vrbo hosts", "Property managers with repeat turnovers", "Owners needing photo-ready resets", "Rentals with documented supply lists"],
     faq: [
       {
         question: "Can you align with checkout/check-in times?",

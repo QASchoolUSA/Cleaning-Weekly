@@ -1,4 +1,26 @@
+# Allow all crawlers including answer-engine / AI fetchers (GEO).
 User-agent: *
 Allow: /
 
-Sitemap: https://www.cleaningweekly.com/sitemap-index.xml
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+Sitemap: https://cleaningweekly.com/sitemap-index.xml

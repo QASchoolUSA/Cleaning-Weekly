@@ -1,6 +1,6 @@
 /**
  * Site-wide SEO / NAP configuration.
- * Replace placeholder social URLs and phone when verified profiles are live.
+ * Phone and sameAs stay empty until verified profiles / number are live.
  */
 export const siteConfig = {
   name: "Cleaning Weekly",
@@ -8,28 +8,28 @@ export const siteConfig = {
   tagline: "Affordable, local recurring cleaning across Central Florida.",
   description:
     "Affordable, reliable weekly cleaning for homes and offices across Central Florida. Insured, background-checked local teams. Get your free quote in minutes.",
-  /** Production origin — no trailing slash */
-  origin: "https://www.cleaningweekly.com",
+  /** Production origin — apex host (no www). No trailing slash. */
+  origin: "https://cleaningweekly.com",
   email: "hello@cleaningweekly.com",
-  /** Display phone — update when a real number is assigned */
-  telephoneDisplay: "(407) 555-0148",
-  /** E.164 for schema / tel: links */
-  telephoneE164: "+14075550148",
+  /**
+   * Display phone — null until a real number is assigned.
+   * Do not publish placeholder / 555 numbers in schema or UI.
+   */
+  telephoneDisplay: null as string | null,
+  /** E.164 for schema / tel: links — null until real number is assigned */
+  telephoneE164: null as string | null,
   address: {
     addressLocality: "Orlando",
     addressRegion: "FL",
     addressCountry: "US",
   },
+  /** Service-area business: no public street address */
+  serviceAreaPolicy:
+    "Cleaning Weekly is a mobile, service-area business serving Central Florida. We do not publish a public storefront address.",
   priceRange: "$$",
-  sameAs: [
-    "https://www.facebook.com/REPLACE_PROFILE",
-    "https://www.instagram.com/REPLACE_PROFILE",
-    "https://www.linkedin.com/company/REPLACE_PROFILE",
-    "https://www.yelp.com/biz/REPLACE_PROFILE",
-    "https://www.bbb.org/us/fl/REPLACE_BBB_PROFILE",
-    "https://g.page/REPLACE_GOOGLE_BUSINESS_PROFILE",
-  ],
-  ogImagePath: "/og-default.svg",
+  /** Only include verified profile URLs; empty until profiles exist */
+  sameAs: [] as readonly string[],
+  ogImagePath: "/og-default.png",
   locale: "en_US",
 } as const;
 

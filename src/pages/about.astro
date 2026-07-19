@@ -1,0 +1,198 @@
+---
+export const prerender = true;
+
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+import { siteConfig } from "../config/site";
+import { cities } from "../data/cities";
+import { breadcrumbJsonLd } from "../lib/schema";
+
+const path = "/about";
+const title = "About Cleaning Weekly — Local Recurring Cleaning in Central Florida";
+const description =
+  "Cleaning Weekly is an affordable local recurring cleaning service for homes and offices across Central Florida. Insured, background-checked teams. Flat weekly rates—not a gig app.";
+
+const orgLd = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "@id": `${siteConfig.origin}/#organization`,
+  name: siteConfig.name,
+  legalName: siteConfig.legalName,
+  url: siteConfig.origin,
+  email: siteConfig.email,
+  description: `${siteConfig.description} ${siteConfig.serviceAreaPolicy}`,
+  address: {
+    "@type": "PostalAddress",
+    addressLocality: siteConfig.address.addressLocality,
+    addressRegion: siteConfig.address.addressRegion,
+    addressCountry: siteConfig.address.addressCountry,
+  },
+  areaServed: cities.map((c) => ({ "@type": "City", name: c.name })),
+};
+---
+
+<BaseLayout title={title} description={description} canonicalPath={path}>
+  <a class="sr-only" href="#main">Skip to main content</a>
+  <Header />
+  <main id="main">
+    <section class="about-hero">
+      <div class="container container--narrow">
+        <p class="about-hero__eyebrow mono">Central Florida · About us</p>
+        <h1 class="display about-hero__title">Affordable local recurring cleaning you can count on</h1>
+        <p class="about-hero__lead">
+          {siteConfig.tagline} Not a gig-economy marketplace. Not a faceless national chain.
+        </p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container container--narrow about-prose">
+        <h2 class="headline">Who we are</h2>
+        <p>
+          Cleaning Weekly exists for people who want the same trusted local team to show up on a
+          weekly or biweekly rhythm—busy homeowners, small offices, and anyone tired of anonymous
+          marketplace cleaners. We quote flat weekly rates from bedrooms, bathrooms, square footage,
+          and frequency. No surge pricing. No platform fees piled on at checkout.
+        </p>
+        <p>
+          Our belief is simple: recurring cleaning should feel like a reliable neighborhood service.
+          That means insured, background-checked teams, clear scopes, and a booking flow that is as
+          polished as the rest of the site. You request a free quote online or reach us by email—then
+          we schedule the same kind of consistent service you would recommend to a neighbor.
+        </p>
+        <p>
+          We intentionally avoid marketplace theater—no anonymous worker roulette, no surge pricing,
+          and no pressure tactics. The product is recurring cleaning done well: show up, follow the
+          checklist, communicate, and leave the space ready for the week ahead.
+        </p>
+
+        <h2 class="headline">How we work</h2>
+        <ol>
+          <li>
+            <strong>Request a quote.</strong> Tell us home or office, size, and preferred frequency.
+            You get a transparent flat rate estimate.
+          </li>
+          <li>
+            <strong>Confirm access and priorities.</strong> Entry instructions, pets, and rooms that
+            need extra attention go on the job notes.
+          </li>
+          <li>
+            <strong>Your assigned team cleans on schedule.</strong> Supplies are included. We work to
+            a checklist suited to recurring maintenance—not a one-off deep clean unless you book one.
+          </li>
+          <li>
+            <strong>Skip or pause with notice.</strong> Life happens. Give 48 hours notice to skip a
+            week or pause service without corporate runaround.
+          </li>
+        </ol>
+
+        <h2 class="headline">What makes us different</h2>
+        <ul>
+          <li>
+            <strong>Local recurring focus</strong> — the same service model for homes and small
+            offices across Central Florida cities.
+          </li>
+          <li>
+            <strong>Insured &amp; background-checked teams</strong> — trust signals we surface before
+            we ask for a booking, not after.
+          </li>
+          <li>
+            <strong>Flat weekly rates</strong> — priced for predictability, not gig surge mechanics.
+          </li>
+          <li>
+            <strong>Simple booking</strong> — free quote online at{" "}
+            <a href="/book">/book</a>, or email{" "}
+            <a href={`mailto:${siteConfig.email}`}>{siteConfig.email}</a>.
+          </li>
+        </ul>
+
+        <h2 class="headline">Service-area policy</h2>
+        <p>{siteConfig.serviceAreaPolicy}</p>
+        <p>
+          We serve communities across Central Florida—including{" "}
+          {cities.map((c) => c.name).join(", ")}. See{" "}
+          <a href="/locations">all locations</a> for neighborhood detail, or ask when you request a
+          quote if your address sits just outside a listed city.
+        </p>
+
+        <div class="about-cta">
+          <a class="btn btn--primary" href="/book">Get a free quote</a>
+          <a class="btn btn--ghost" href="/contact">Contact us</a>
+        </div>
+      </div>
+    </section>
+  </main>
+  <Footer />
+
+  <script type="application/ld+json" set:html={JSON.stringify(orgLd)} />
+  <script
+    type="application/ld+json"
+    set:html={JSON.stringify(
+      breadcrumbJsonLd([
+        { name: "Home", path: "/" },
+        { name: "About", path },
+      ]),
+    )}
+  />
+</BaseLayout>
+
+<style>
+  .about-hero {
+    padding-block: clamp(var(--space-12), 8vw, var(--space-20));
+    background: var(--teal-band);
+    color: var(--ink-on-teal);
+  }
+
+  .about-hero__eyebrow {
+    margin: 0 0 var(--space-4);
+    font-size: 0.8125rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--ink-on-teal-muted);
+  }
+
+  .about-hero__title {
+    margin: 0 0 var(--space-4);
+    max-width: 22ch;
+  }
+
+  .about-hero__lead {
+    margin: 0;
+    max-width: 42ch;
+    font-size: 1.125rem;
+    color: var(--ink-on-teal-muted);
+  }
+
+  .about-prose h2 {
+    margin: var(--space-10) 0 var(--space-4);
+  }
+
+  .about-prose h2:first-child {
+    margin-top: 0;
+  }
+
+  .about-prose p,
+  .about-prose li {
+    color: var(--ink-secondary);
+  }
+
+  .about-prose ol,
+  .about-prose ul {
+    padding-left: 1.25rem;
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  .about-prose a {
+    color: var(--teal-deep);
+    font-weight: 500;
+  }
+
+  .about-cta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-4);
+    margin-top: var(--space-10);
+  }
+</style>

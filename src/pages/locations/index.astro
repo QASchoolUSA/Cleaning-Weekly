@@ -11,6 +11,11 @@ const path = "/locations";
 const title = "Service Areas — Central Florida Cleaning | Cleaning Weekly";
 const description =
   "Cleaning Weekly serves Orlando, Winter Park, Kissimmee, Sanford, Apopka, Oviedo, and surrounding Central Florida communities with recurring home and office cleaning.";
+const faqs = [
+  { question: "Which Central Florida cities does Cleaning Weekly serve?", answer: "Cleaning Weekly serves Orlando, Winter Park, Kissimmee, Sanford, Apopka, Oviedo, and nearby communities. Exact availability depends on the address and schedule, so include your ZIP code when requesting a quote." },
+  { question: "Does pricing change by city?", answer: "Quotes are driven mainly by service, size, bathrooms, condition, frequency, and add-ons. An address outside the normal route may require confirmation before a date is accepted." },
+  { question: "Can I book recurring cleaning for an apartment or office?", answer: "Yes. The service area includes houses, apartments, condos, and small offices when access, parking, and scheduling requirements are provided in advance." },
+];
 ---
 
 <BaseLayout title={title} description={description} canonicalPath={path}>
@@ -51,6 +56,22 @@ const description =
         </p>
       </div>
     </section>
+    <section class="section section--surface">
+      <div class="container container--narrow">
+        <h2 class="headline areas-content__title">Local cleaning built around Central Florida homes</h2>
+        <p>Central Florida homes contend with year-round air-conditioning, summer rain, pollen, hard-floor traffic, and busy schedules shaped by schools, commuting, hospitality, and tourism. A useful cleaning plan accounts for the property itself—house, apartment, condo, office, or short-term rental—not just the city printed in the address.</p>
+        <p>Before the first visit, share gate or building access, parking, pets, stairs, floor materials, and the rooms that matter most. Weekly service is often the right fit for active households and offices; biweekly service can maintain a recent deep clean for lighter-use homes. One-time deep and move-related cleans are also available throughout the route.</p>
+        <h2 class="headline areas-content__title">Service-area questions</h2>
+        <div class="areas-faq">
+          {faqs.map((faq) => (
+            <details>
+              <summary>{faq.question}</summary>
+              <p>{faq.answer}</p>
+            </details>
+          ))}
+        </div>
+      </div>
+    </section>
   </main>
   <Footer />
 
@@ -62,6 +83,18 @@ const description =
         { name: "Locations", path },
       ]),
     )}
+  />
+  <script
+    type="application/ld+json"
+    set:html={JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      mainEntity: faqs.map((faq) => ({
+        "@type": "Question",
+        name: faq.question,
+        acceptedAnswer: { "@type": "Answer", text: faq.answer },
+      })),
+    })}
   />
 </BaseLayout>
 
@@ -137,6 +170,28 @@ const description =
 
   .areas-guide a {
     color: var(--teal);
+  }
+
+  .areas-content__title {
+    margin-top: var(--space-10);
+    color: var(--teal-deep);
+  }
+
+  .areas-faq {
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  .areas-faq details {
+    padding: var(--space-5);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background: var(--ground);
+  }
+
+  .areas-faq summary {
+    font-weight: 600;
+    cursor: pointer;
   }
 
   @media (min-width: 640px) {

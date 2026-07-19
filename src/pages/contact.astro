@@ -1,0 +1,150 @@
+---
+export const prerender = true;
+
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+import { siteConfig } from "../config/site";
+import { breadcrumbJsonLd } from "../lib/schema";
+
+const path = "/contact";
+const title = "Contact Cleaning Weekly — Quote or Email";
+const description = `Contact Cleaning Weekly at ${siteConfig.email}. Mobile service-area cleaning across Central Florida. Request a free quote online or email us—no fake phone numbers.`;
+---
+
+<BaseLayout title={title} description={description} canonicalPath={path}>
+  <a class="sr-only" href="#main">Skip to main content</a>
+  <Header />
+  <main id="main">
+    <section class="contact-hero">
+      <div class="container container--narrow">
+        <p class="contact-hero__eyebrow mono">Get in touch</p>
+        <h1 class="display contact-hero__title">Contact Cleaning Weekly</h1>
+        <p class="contact-hero__lead">
+          Prefer to talk before you book? Email us or request a free quote online. We reply with clear
+          next steps—no sales script theater.
+        </p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container contact-grid">
+        <div class="contact-card">
+          <h2 class="headline">Email</h2>
+          <p>
+            Reach the team at{" "}
+            <a href={`mailto:${siteConfig.email}`}>{siteConfig.email}</a>. Tell us whether you need
+            home or office cleaning, your city, and preferred frequency.
+          </p>
+        </div>
+
+        <div class="contact-card">
+          <h2 class="headline">Book online</h2>
+          <p>
+            The fastest path to a number is our quote flow. Size, bathrooms, and frequency feed a flat
+            weekly estimate—then you can book when you are ready.
+          </p>
+          <a class="btn btn--primary" href="/book">Get a free quote</a>
+        </div>
+
+        <div class="contact-card contact-card--wide">
+          <h2 class="headline">Service-area policy</h2>
+          <p>{siteConfig.serviceAreaPolicy}</p>
+          <p>
+            Based in the Orlando area and serving Central Florida communities. Browse{" "}
+            <a href="/locations">locations</a> or read more{" "}
+            <a href="/about">about Cleaning Weekly</a>.
+          </p>
+          <p class="contact-note mono">
+            Phone: not published yet. We will list a real number here once it is assigned—no
+            placeholders.
+          </p>
+        </div>
+      </div>
+    </section>
+  </main>
+  <Footer />
+
+  <script
+    type="application/ld+json"
+    set:html={JSON.stringify(
+      breadcrumbJsonLd([
+        { name: "Home", path: "/" },
+        { name: "Contact", path },
+      ]),
+    )}
+  />
+</BaseLayout>
+
+<style>
+  .contact-hero {
+    padding-block: clamp(var(--space-12), 8vw, var(--space-20));
+    background: var(--teal-band);
+    color: var(--ink-on-teal);
+  }
+
+  .contact-hero__eyebrow {
+    margin: 0 0 var(--space-4);
+    font-size: 0.8125rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--ink-on-teal-muted);
+  }
+
+  .contact-hero__title {
+    margin: 0 0 var(--space-4);
+  }
+
+  .contact-hero__lead {
+    margin: 0;
+    max-width: 40ch;
+    font-size: 1.125rem;
+    color: var(--ink-on-teal-muted);
+  }
+
+  .contact-grid {
+    display: grid;
+    gap: var(--space-6);
+  }
+
+  .contact-card {
+    padding: var(--space-6);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+  }
+
+  .contact-card h2 {
+    margin: 0 0 var(--space-3);
+  }
+
+  .contact-card p {
+    margin: 0 0 var(--space-4);
+    color: var(--ink-secondary);
+  }
+
+  .contact-card p:last-child {
+    margin-bottom: 0;
+  }
+
+  .contact-card a:not(.btn) {
+    color: var(--teal-deep);
+    font-weight: 500;
+  }
+
+  .contact-note {
+    margin-top: var(--space-4);
+    font-size: 0.875rem;
+    color: var(--ink-secondary);
+  }
+
+  @media (min-width: 768px) {
+    .contact-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .contact-card--wide {
+      grid-column: 1 / -1;
+    }
+  }
+</style>

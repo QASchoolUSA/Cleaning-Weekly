@@ -11,6 +11,57 @@ import BookCta from "../components/BookCta.astro";
 import CallSection from "../components/CallSection.astro";
 import FAQ from "../components/FAQ.astro";
 import Footer from "../components/Footer.astro";
+import { absoluteUrl } from "../config/site";
+import { faqPageJsonLd, howToJsonLd } from "../lib/schema";
+
+const homeFaqs = [
+  {
+    question: "Do you clean both homes and offices?",
+    answer:
+      "Yes. Residential and commercial spaces are both part of our weekly service. We will tailor the checklist to your layout — open offices, suites, and family homes all work.",
+  },
+  {
+    question: "Will I get the same cleaners every week?",
+    answer:
+      "That is the goal. We assign a consistent team to your space so they learn your preferences and show up on schedule without re-explaining the details each visit.",
+  },
+  {
+    question: "How does pricing work?",
+    answer:
+      "We quote a flat weekly rate based on your space size and service type. No surge pricing, no last-minute add-ons at the door. Your quote email spells out exactly what is included.",
+  },
+  {
+    question: "What areas do you serve?",
+    answer:
+      "All Central Florida cities — Orlando, Winter Park, Kissimmee, Sanford, Apopka, Oviedo, and surrounding communities. See our service areas or send a quote request with your city.",
+  },
+  {
+    question: "Are your cleaners insured and background-checked?",
+    answer:
+      "Yes. Every team member is background-checked, and Cleaning Weekly carries insurance for residential and commercial work. We are happy to provide proof before your first visit.",
+  },
+];
+
+const bookingHowTo = howToJsonLd({
+  name: "How to get a Cleaning Weekly quote",
+  description:
+    "Three steps to book recurring home or office cleaning across Central Florida.",
+  url: absoluteUrl("/"),
+  steps: [
+    {
+      name: "Tell us about your space",
+      text: "Share your city, home or office size, and any priorities — pets, floors, high-traffic areas. Takes about two minutes.",
+    },
+    {
+      name: "Get your free quote",
+      text: "We respond with a clear weekly rate. What we quote is what you pay — no surge pricing, no hidden add-ons.",
+    },
+    {
+      name: "Same team, every week",
+      text: "Your assigned cleaners learn your space and show up on schedule. Prefer to talk first? Call us anytime.",
+    },
+  ],
+});
 ---
 
 <BaseLayout canonicalPath="/">
@@ -26,4 +77,6 @@ import Footer from "../components/Footer.astro";
     <FAQ />
   </main>
   <Footer />
+  <script type="application/ld+json" set:html={JSON.stringify(faqPageJsonLd(homeFaqs))} />
+  <script type="application/ld+json" set:html={JSON.stringify(bookingHowTo)} />
 </BaseLayout>
