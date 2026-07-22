@@ -38,7 +38,10 @@ function buildNotes(booking: StoredBooking): string {
   return parts.join("\n");
 }
 
-function env(name: string): string | undefined {
+function env(name: string, runtimeEnv?: Record<string, unknown>): string | undefined {
+  if (runtimeEnv && typeof runtimeEnv[name] === "string") {
+    return runtimeEnv[name];
+  }
   const fromImport = (import.meta.env as Record<string, string | undefined>)[name];
   if (fromImport) return fromImport;
   if (typeof process !== "undefined") {
@@ -49,10 +52,11 @@ function env(name: string): string | undefined {
 
 export async function forwardToBookingBroom(
   booking: StoredBooking,
+  runtimeEnv?: Record<string, unknown>,
 ): Promise<BookingBroomResult> {
-  const baseUrl = env("BOOKING_BROOM_URL")?.replace(/\/$/, "");
-  const apiKey = env("BOOKING_BROOM_API_KEY");
-  const siteSlug = env("BOOKING_BROOM_SITE_SLUG") || "cleaning-weekly";
+  const baseUrl = env("BOOKING_BROOM_URL", runtimeEnv)?.replace(/\/$/, "");
+  const apiKey = env("BOOKING_BROOM_API_KEY", runtimeEnv);
+  const siteSlug = env("BOOKING_BROOM_SITE_SLUG", runtimeEnv) || "cleaning-weekly";
 
   if (!baseUrl || !apiKey) {
     console.info(

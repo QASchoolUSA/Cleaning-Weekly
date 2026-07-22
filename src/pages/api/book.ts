@@ -8,7 +8,7 @@ import { sendBookingEmails } from "../../lib/mail";
 import { forwardToBookingBroom } from "../../lib/booking-broom";
 import { getServiceBySlug } from "../../data/services";
 
-export const POST: APIRoute = async ({ request }) => {
+export const POST: APIRoute = async ({ request, locals }) => {
   try {
     const body = await request.json();
     const parsed = bookingPayloadSchema.safeParse(body);
@@ -73,7 +73,11 @@ export const POST: APIRoute = async ({ request }) => {
       console.info("[api/book] Local bookings.json skip for", booking.id);
     }
 
-    const broom = await forwardToBookingBroom(booking);
+    const runtimeEnv = (
+      locals as { runtime?: { env?: Record<string, unknown> } }
+    ).runtime?.env;
+
+    const broom = await forwardToBookingBroom(booking, runtimeEnv);
     if (broom.error) {
       console.error("[api/book] Booking Broom forward failed:", broom.error);
     }
