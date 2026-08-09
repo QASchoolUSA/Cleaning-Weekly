@@ -1,0 +1,4 @@
+# pnpm blocks dependency build scripts by default; these are the ones this project needs.
+allowBuilds:
+  esbuild: true
+  workerd: true
