@@ -5,15 +5,15 @@ import {
   PRICING_CACHE_SECONDS,
   getPricingConfig,
 } from "../../lib/pricing-config";
+import { getRuntimeEnv } from "../../lib/runtime-env";
 
 /**
  * The booking wizard is a static page, so it cannot read the Booking Broom key.
  * This endpoint is the one dynamic hop: it fetches the live config server-side
  * and hands the wizard the numbers only.
  */
-export const GET: APIRoute = async ({ locals }) => {
-  const runtimeEnv = (locals as { runtime?: { env?: Record<string, unknown> } })
-    .runtime?.env;
+export const GET: APIRoute = async () => {
+  const runtimeEnv = await getRuntimeEnv();
   const { config, live, version } = await getPricingConfig(runtimeEnv);
 
   return new Response(JSON.stringify({ config, live, version }), {

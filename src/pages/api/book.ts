@@ -8,8 +8,9 @@ import { sendBookingEmails } from "../../lib/mail";
 import { forwardToBookingBroom } from "../../lib/booking-broom";
 import { getServiceBySlug } from "../../data/services";
 import { getPricingConfig } from "../../lib/pricing-config";
+import { getRuntimeEnv } from "../../lib/runtime-env";
 
-export const POST: APIRoute = async ({ request, locals }) => {
+export const POST: APIRoute = async ({ request }) => {
   try {
     const body = await request.json();
     const parsed = bookingPayloadSchema.safeParse(body);
@@ -34,9 +35,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
       });
     }
 
-    const runtimeEnv = (
-      locals as { runtime?: { env?: Record<string, unknown> } }
-    ).runtime?.env;
+    const runtimeEnv = await getRuntimeEnv();
 
     // Priced here, not from the client, and with the same config the wizard read.
     const { config } = await getPricingConfig(runtimeEnv);

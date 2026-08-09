@@ -31,13 +31,6 @@ function buildNotes(booking: StoredBooking): string {
     parts.push(extras.join("; "));
   }
 
-  if (booking.lineItems.length > 0) {
-    parts.push(
-      "Price breakdown: " +
-        booking.lineItems.map((item) => `${item.label} ($${item.amount})`).join("; "),
-    );
-  }
-
   return parts.join("\n");
 }
 
@@ -97,6 +90,10 @@ function buildQuote(booking: StoredBooking) {
     currency: "USD",
     service_level: booking.serviceTitle,
     frequency: frequency ? optionLabel(booking, "frequency", frequency) : undefined,
+    // The priced breakdown, so it no longer has to be prose in `notes`.
+    add_ons: booking.lineItems.length
+      ? booking.lineItems.map((item) => ({ label: item.label, price: item.amount }))
+      : undefined,
     payment_terms: PAYMENT_TERMS[booking.priceUnit],
   };
 }
@@ -144,6 +141,7 @@ export async function forwardToBookingBroom(
         preferred_date: booking.preferredDate,
         preferred_time: formatTimeWindow(booking.timeWindow),
         notes: buildNotes(booking),
+        intent: "book",
         property: buildProperty(booking, pricing),
         quote: buildQuote(booking),
       }),
