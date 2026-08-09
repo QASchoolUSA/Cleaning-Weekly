@@ -1,5 +1,10 @@
 import { services } from "../data/services";
-import { SQFT_BANDS, sqftBandFor } from "../lib/sqft-bands";
+import { sqftBandFor } from "../lib/sqft-bands";
+import {
+  DEFAULT_PRICING_CONFIG,
+  isUsablePricingConfig,
+  type PricingConfig,
+} from "../config/pricing";
 import {
   getInitialState,
   getService,
@@ -20,7 +25,13 @@ const skippedServicePicker = Boolean(
 );
 let showServiceChip = skippedServicePicker;
 
-let state = getInitialState(initialService);
+/**
+ * Starts on the prices this build shipped with so the first estimate is instant,
+ * then swaps in Booking Broom's live numbers once they arrive.
+ */
+let pricingConfig: PricingConfig = DEFAULT_PRICING_CONFIG;
+
+let state = getInitialState(initialService, pricingConfig);
 
 const shell = document.getElementById("booking-wizard")!;
 const bookPage = document.getElementById("main")!;
@@ -102,7 +113,7 @@ function renderProgress() {
 }
 
 function renderPriceBreakdown(): string {
-  state = updateEstimate(state);
+  state = updateEstimate(state, pricingConfig);
   const estimate = state.estimate;
   if (!estimate) return "";
 
@@ -136,7 +147,7 @@ function renderEstimate() {
     return;
   }
 
-  state = updateEstimate(state);
+  state = updateEstimate(state, pricingConfig);
   const estimate = state.estimate;
   if (!estimate) {
     estimateHost.hidden = true;
@@ -173,7 +184,7 @@ function pillChoices(
   const min = field.min ?? 0;
   const max = field.max ?? 99;
 
-  if (field.id === "sqft" && max <= 8000) return SQFT_BANDS;
+  if (field.id === "sqft" && max <= 8000) return pricingConfig.sqftBands;
 
   if (max - min <= 7) {
     return Array.from({ length: max - min + 1 }, (_, i) => {
@@ -194,7 +205,7 @@ function renderPillField(
 ) {
   const numValue = Number(value);
   const selected =
-    field.id === "sqft" ? sqftBandFor(numValue).value : numValue;
+    field.id === "sqft" ? sqftBandFor(numValue, pricingConfig).value : numValue;
   const hints = [
     field.id === "sqft" ? "Not sure? Pick the closest range." : "",
     fieldHint(field.id),
@@ -435,7 +446,7 @@ function renderStep3() {
 }
 
 function renderStep4() {
-  state = updateEstimate(state);
+  state = updateEstimate(state, pricingConfig);
   const service = getService(state.serviceSlug)!;
   return `
     <h2 class="wizard-step__title">Looks good?</h2>
@@ -547,7 +558,7 @@ function bindStepListeners() {
 
 function selectPill(fieldId: string, value: number) {
   state.pricingDetails[fieldId] = value;
-  state = updateEstimate(state);
+  state = updateEstimate(state, pricingConfig);
 
   const input = stepContainer.querySelector<HTMLInputElement>(`#field-${fieldId}`);
   if (input) input.value = String(value);
@@ -578,7 +589,7 @@ function adjustStepper(fieldId: string, direction: -1 | 1) {
   const next = Math.min(max, Math.max(min, Number(input.value) + direction * step));
   input.value = String(next);
   state.pricingDetails[fieldId] = next;
-  state = updateEstimate(state);
+  state = updateEstimate(state, pricingConfig);
 
   const valueEl = stepContainer.querySelector(`[data-stepper-value="${fieldId}"]`);
   if (valueEl) valueEl.textContent = String(next);
@@ -601,7 +612,7 @@ function readPricingFieldsOnly() {
     state.pricingDetails[el.name] =
       el instanceof HTMLInputElement && el.type === "number" ? Number(el.value) : el.value;
   });
-  state = updateEstimate(state);
+  state = updateEstimate(state, pricingConfig);
 }
 
 function renderStep() {
@@ -648,7 +659,7 @@ function readStepInputs() {
       state.pricingDetails = Object.fromEntries(
         service.pricingFields.map((field) => [field.id, field.defaultValue]),
       );
-      state = updateEstimate(state);
+      state = updateEstimate(state, pricingConfig);
     }
   }
 
@@ -740,3 +751,26 @@ nextBtn.addEventListener("click", async () => {
 });
 
 renderStep();
+
+/**
+ * The book page is static, so the live config cannot come down in the HTML. Pull
+ * it from the proxy and re-price if it differs from what shipped; silence on
+ * failure is deliberate, the compiled prices remain valid.
+ */
+async function loadLivePricing() {
+  try {
+    const response = await fetch("/api/pricing-config");
+    if (!response.ok) return;
+    const body = (await response.json()) as { config?: unknown };
+    if (!isUsablePricingConfig(body.config)) return;
+    pricingConfig = body.config;
+    // Only the money is re-rendered: a full re-render would scroll the page and
+    // throw away anything already typed into the contact step.
+    renderEstimate();
+    updateStep2Breakdown();
+  } catch {
+    // Keep the compiled prices.
+  }
+}
+
+void loadLivePricing();

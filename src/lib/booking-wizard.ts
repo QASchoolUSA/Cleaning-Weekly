@@ -1,5 +1,6 @@
 import { services, type ServiceDefinition } from "../data/services";
 import { calculatePrice, formatPrice, type PricingResult } from "./pricing";
+import { DEFAULT_PRICING_CONFIG, type PricingConfig } from "../config/pricing";
 import type { BookingPayload } from "./schemas";
 
 export interface WizardState {
@@ -30,7 +31,10 @@ export function getTomorrowDateString(): string {
   return date.toISOString().slice(0, 10);
 }
 
-export function getInitialState(serviceSlug?: string): WizardState {
+export function getInitialState(
+  serviceSlug?: string,
+  config: PricingConfig = DEFAULT_PRICING_CONFIG,
+): WizardState {
   const fromUrl = Boolean(serviceSlug && services.some((s) => s.slug === serviceSlug));
   const slug = fromUrl ? serviceSlug! : services[0].slug;
   const service = services.find((s) => s.slug === slug)!;
@@ -42,7 +46,7 @@ export function getInitialState(serviceSlug?: string): WizardState {
     step: fromUrl ? 2 : 1,
     serviceSlug: slug,
     pricingDetails,
-    estimate: calculatePrice(slug, pricingDetails),
+    estimate: calculatePrice(slug, pricingDetails, config),
     preferredDate: getTomorrowDateString(),
     timeWindow: "flexible",
     name: "",
@@ -62,10 +66,13 @@ export function getService(slug: string): ServiceDefinition | undefined {
   return services.find((s) => s.slug === slug);
 }
 
-export function updateEstimate(state: WizardState): WizardState {
+export function updateEstimate(
+  state: WizardState,
+  config: PricingConfig = DEFAULT_PRICING_CONFIG,
+): WizardState {
   return {
     ...state,
-    estimate: calculatePrice(state.serviceSlug, state.pricingDetails),
+    estimate: calculatePrice(state.serviceSlug, state.pricingDetails, config),
   };
 }
 

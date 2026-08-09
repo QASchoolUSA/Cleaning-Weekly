@@ -13,7 +13,9 @@
 	},
 	"vars": {
 		"BOOKING_BROOM_URL": "https://bookings.kedrik.com",
-		"BOOKING_BROOM_SITE_SLUG": "cleaning-weekly",
-		"BOOKING_BROOM_API_KEY": "bb_cleaning-weekly_6BzsDxq4zUfwELd72RDdm4l8X3XTTDh1"
+		"BOOKING_BROOM_SITE_SLUG": "cleaning-weekly"
 	}
+	// BOOKING_BROOM_API_KEY is a secret, not a var. Set it with
+	// `wrangler secret put BOOKING_BROOM_API_KEY` for the deployed worker, and
+	// put it in .dev.vars (gitignored) for local development.
 }

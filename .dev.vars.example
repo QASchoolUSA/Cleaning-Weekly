@@ -1,0 +1,5 @@
+# Local worker secrets. Copy to .dev.vars (gitignored) and fill in.
+# In production these are set with `wrangler secret put <NAME>`.
+BOOKING_BROOM_URL=https://bookings.kedrik.com
+BOOKING_BROOM_SITE_SLUG=cleaning-weekly
+BOOKING_BROOM_API_KEY=

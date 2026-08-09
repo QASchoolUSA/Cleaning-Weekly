@@ -7,6 +7,7 @@ import { generateBookingId, saveBooking } from "../../lib/bookings";
 import { sendBookingEmails } from "../../lib/mail";
 import { forwardToBookingBroom } from "../../lib/booking-broom";
 import { getServiceBySlug } from "../../data/services";
+import { getPricingConfig } from "../../lib/pricing-config";
 
 export const POST: APIRoute = async ({ request, locals }) => {
   try {
@@ -33,7 +34,17 @@ export const POST: APIRoute = async ({ request, locals }) => {
       });
     }
 
-    const pricing = calculatePrice(payload.serviceSlug, payload.pricingDetails);
+    const runtimeEnv = (
+      locals as { runtime?: { env?: Record<string, unknown> } }
+    ).runtime?.env;
+
+    // Priced here, not from the client, and with the same config the wizard read.
+    const { config } = await getPricingConfig(runtimeEnv);
+    const pricing = calculatePrice(
+      payload.serviceSlug,
+      payload.pricingDetails,
+      config,
+    );
     if (!pricing) {
       return new Response(JSON.stringify({ ok: false, error: "Could not calculate price" }), {
         status: 400,
@@ -73,11 +84,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
       console.info("[api/book] Local bookings.json skip for", booking.id);
     }
 
-    const runtimeEnv = (
-      locals as { runtime?: { env?: Record<string, unknown> } }
-    ).runtime?.env;
-
-    const broom = await forwardToBookingBroom(booking, runtimeEnv);
+    const broom = await forwardToBookingBroom(booking, runtimeEnv, config);
     if (broom.error) {
       console.error("[api/book] Booking Broom forward failed:", broom.error);
     }

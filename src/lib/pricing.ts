@@ -1,7 +1,7 @@
 import {
-  pricingConfig,
-  type DebrisLevel,
-  type Frequency,
+  DEFAULT_PRICING_CONFIG,
+  multiplierFor,
+  type PricingConfig,
 } from "../config/pricing";
 import { getServiceBySlug } from "../data/services";
 
@@ -39,6 +39,7 @@ function str(details: PricingDetails, key: string, fallback = ""): string {
 export function calculatePrice(
   serviceSlug: string,
   details: PricingDetails,
+  config: PricingConfig = DEFAULT_PRICING_CONFIG,
 ): PricingResult | null {
   const service = getServiceBySlug(serviceSlug);
   if (!service) return null;
@@ -47,26 +48,29 @@ export function calculatePrice(
 
   switch (serviceSlug) {
     case "home-cleaning": {
-      const cfg = pricingConfig.homeCleaning;
+      const cfg = config.homeCleaning;
       const bedrooms = num(details, "bedrooms", 3);
       const bathrooms = num(details, "bathrooms", 2);
       const sqft = num(details, "sqft", 1800);
-      const frequency = str(details, "frequency", "weekly") as Frequency;
+      const frequency = str(details, "frequency", "weekly");
 
       lineItems.push({ label: "Base weekly rate", amount: cfg.base });
-      if (bedrooms > 2) {
+      if (bedrooms > cfg.includedBedrooms) {
         lineItems.push({
-          label: `Extra bedrooms (${bedrooms - 2})`,
-          amount: (bedrooms - 2) * cfg.perBed,
+          label: `Extra bedrooms (${bedrooms - cfg.includedBedrooms})`,
+          amount: (bedrooms - cfg.includedBedrooms) * cfg.perBed,
         });
       }
-      if (bathrooms > 2) {
+      if (bathrooms > cfg.includedBathrooms) {
         lineItems.push({
-          label: `Extra bathrooms (${bathrooms - 2})`,
-          amount: (bathrooms - 2) * cfg.perBath,
+          label: `Extra bathrooms (${bathrooms - cfg.includedBathrooms})`,
+          amount: (bathrooms - cfg.includedBathrooms) * cfg.perBath,
         });
       }
-      const sqftBlocks = Math.max(0, Math.ceil((sqft - 1500) / 500));
+      const sqftBlocks = Math.max(
+        0,
+        Math.ceil((sqft - cfg.includedSqFt) / 500),
+      );
       if (sqftBlocks > 0) {
         lineItems.push({
           label: `Additional square footage (${sqftBlocks} × 500 sq ft)`,
@@ -74,7 +78,7 @@ export function calculatePrice(
         });
       }
       const subtotal = lineItems.reduce((sum, item) => sum + item.amount, 0);
-      const multiplier = cfg.frequency[frequency] ?? 1;
+      const multiplier = multiplierFor(cfg.frequencyMultipliers, frequency);
       if (multiplier !== 1) {
         lineItems.push({
           label: `Frequency adjustment (${frequency})`,
@@ -91,27 +95,30 @@ export function calculatePrice(
     }
 
     case "office-cleaning": {
-      const cfg = pricingConfig.officeCleaning;
+      const cfg = config.officeCleaning;
       const sqft = num(details, "sqft", 2500);
       const restrooms = num(details, "restrooms", 2);
-      const frequency = str(details, "frequency", "weekly") as Frequency;
+      const frequency = str(details, "frequency", "weekly");
 
       lineItems.push({ label: "Base weekly rate", amount: cfg.base });
-      const sqftBlocks = Math.max(0, Math.ceil((sqft - 2000) / 500));
+      const sqftBlocks = Math.max(
+        0,
+        Math.ceil((sqft - cfg.includedSqFt) / 500),
+      );
       if (sqftBlocks > 0) {
         lineItems.push({
           label: `Additional square footage (${sqftBlocks} × 500 sq ft)`,
           amount: sqftBlocks * cfg.per500SqFt,
         });
       }
-      if (restrooms > 2) {
+      if (restrooms > cfg.includedRestrooms) {
         lineItems.push({
-          label: `Extra restrooms (${restrooms - 2})`,
-          amount: (restrooms - 2) * cfg.perRestroom,
+          label: `Extra restrooms (${restrooms - cfg.includedRestrooms})`,
+          amount: (restrooms - cfg.includedRestrooms) * cfg.perRestroom,
         });
       }
       const subtotal = lineItems.reduce((sum, item) => sum + item.amount, 0);
-      const multiplier = cfg.frequency[frequency] ?? 1;
+      const multiplier = multiplierFor(cfg.frequencyMultipliers, frequency);
       if (multiplier !== 1) {
         lineItems.push({
           label: `Frequency adjustment (${frequency})`,
@@ -128,12 +135,13 @@ export function calculatePrice(
     }
 
     case "deep-cleaning": {
-      const home = calculatePrice("home-cleaning", {
-        ...details,
-        frequency: "weekly",
-      });
+      const home = calculatePrice(
+        "home-cleaning",
+        { ...details, frequency: "weekly" },
+        config,
+      );
       if (!home) return null;
-      const multiplier = pricingConfig.deepCleaning.multiplier;
+      const multiplier = config.deepCleaningMultiplier;
       return {
         serviceSlug,
         serviceTitle: service.title,
@@ -153,25 +161,28 @@ export function calculatePrice(
     }
 
     case "move-in-out": {
-      const cfg = pricingConfig.moveInOut;
+      const cfg = config.moveInOut;
       const bedrooms = num(details, "bedrooms", 3);
       const bathrooms = num(details, "bathrooms", 2);
       const sqft = num(details, "sqft", 1800);
 
       lineItems.push({ label: "Move-in/out base", amount: cfg.base });
-      if (bedrooms > 2) {
+      if (bedrooms > cfg.includedBedrooms) {
         lineItems.push({
-          label: `Extra bedrooms (${bedrooms - 2})`,
-          amount: (bedrooms - 2) * cfg.perBed,
+          label: `Extra bedrooms (${bedrooms - cfg.includedBedrooms})`,
+          amount: (bedrooms - cfg.includedBedrooms) * cfg.perBed,
         });
       }
-      if (bathrooms > 2) {
+      if (bathrooms > cfg.includedBathrooms) {
         lineItems.push({
-          label: `Extra bathrooms (${bathrooms - 2})`,
-          amount: (bathrooms - 2) * cfg.perBath,
+          label: `Extra bathrooms (${bathrooms - cfg.includedBathrooms})`,
+          amount: (bathrooms - cfg.includedBathrooms) * cfg.perBath,
         });
       }
-      const sqftBlocks = Math.max(0, Math.ceil((sqft - 1500) / 500));
+      const sqftBlocks = Math.max(
+        0,
+        Math.ceil((sqft - cfg.includedSqFt) / 500),
+      );
       if (sqftBlocks > 0) {
         lineItems.push({
           label: `Additional square footage (${sqftBlocks} × 500 sq ft)`,
@@ -188,12 +199,15 @@ export function calculatePrice(
     }
 
     case "post-construction": {
-      const cfg = pricingConfig.postConstruction;
+      const cfg = config.postConstruction;
       const sqft = num(details, "sqft", 2200);
-      const debris = str(details, "debris", "medium") as DebrisLevel;
+      const debris = str(details, "debris", "medium");
 
       lineItems.push({ label: "Post-construction base", amount: cfg.base });
-      const sqftBlocks = Math.max(0, Math.ceil((sqft - 2000) / 500));
+      const sqftBlocks = Math.max(
+        0,
+        Math.ceil((sqft - cfg.includedSqFt) / 500),
+      );
       if (sqftBlocks > 0) {
         lineItems.push({
           label: `Additional square footage (${sqftBlocks} × 500 sq ft)`,
@@ -201,7 +215,7 @@ export function calculatePrice(
         });
       }
       const subtotal = lineItems.reduce((sum, item) => sum + item.amount, 0);
-      const debrisMultiplier = cfg.debris[debris] ?? 1;
+      const debrisMultiplier = multiplierFor(cfg.debrisMultipliers, debris);
       if (debrisMultiplier !== 1) {
         lineItems.push({
           label: `Debris level (${debris})`,
@@ -218,27 +232,29 @@ export function calculatePrice(
     }
 
     case "airbnb-turnover": {
-      const cfg = pricingConfig.airbnbTurnover;
+      const cfg = config.airbnbTurnover;
       const bedrooms = num(details, "bedrooms", 2);
       const bathrooms = num(details, "bathrooms", 1);
       const turnovers = num(details, "turnovers", 8);
 
       lineItems.push({ label: "Per-turnover base", amount: cfg.base });
-      if (bedrooms > 1) {
+      if (bedrooms > cfg.includedBedrooms) {
         lineItems.push({
-          label: `Extra bedrooms (${bedrooms - 1})`,
-          amount: (bedrooms - 1) * cfg.perBed,
+          label: `Extra bedrooms (${bedrooms - cfg.includedBedrooms})`,
+          amount: (bedrooms - cfg.includedBedrooms) * cfg.perBed,
         });
       }
-      if (bathrooms > 1) {
+      if (bathrooms > cfg.includedBathrooms) {
         lineItems.push({
-          label: `Extra bathrooms (${bathrooms - 1})`,
-          amount: (bathrooms - 1) * cfg.perBath,
+          label: `Extra bathrooms (${bathrooms - cfg.includedBathrooms})`,
+          amount: (bathrooms - cfg.includedBathrooms) * cfg.perBath,
         });
       }
       let perVisit = lineItems.reduce((sum, item) => sum + item.amount, 0);
-      if (turnovers > 4) {
-        const discount = roundCurrency(perVisit * (1 - cfg.perTurnover));
+      if (turnovers > cfg.highVolumeThreshold) {
+        const discount = roundCurrency(
+          perVisit * (1 - cfg.highVolumeMultiplier),
+        );
         lineItems.push({ label: "High-volume discount", amount: -discount });
         perVisit -= discount;
       }

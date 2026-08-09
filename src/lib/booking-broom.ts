@@ -7,6 +7,7 @@ import type { StoredBooking } from "./schemas";
 import { formatTimeWindow } from "./schemas";
 import { getServiceBySlug } from "../data/services";
 import { sqftBandLabel } from "./sqft-bands";
+import { DEFAULT_PRICING_CONFIG, type PricingConfig } from "../config/pricing";
 
 export interface BookingBroomResult {
   forwarded: boolean;
@@ -67,14 +68,14 @@ function numericDetail(booking: StoredBooking, fieldId: string): number | undefi
   return Number.isFinite(num) ? num : undefined;
 }
 
-function buildProperty(booking: StoredBooking) {
+function buildProperty(booking: StoredBooking, pricing: PricingConfig) {
   const sqft = numericDetail(booking, "sqft");
 
   const property = {
     bedrooms: numericDetail(booking, "bedrooms"),
     bathrooms: numericDetail(booking, "bathrooms"),
     // The wizard collects a band, so report the band rather than its midpoint.
-    size_label: sqft === undefined ? undefined : sqftBandLabel(sqft),
+    size_label: sqft === undefined ? undefined : sqftBandLabel(sqft, pricing),
   };
 
   return Object.values(property).some((value) => value !== undefined)
@@ -115,6 +116,7 @@ function env(name: string, runtimeEnv?: Record<string, unknown>): string | undef
 export async function forwardToBookingBroom(
   booking: StoredBooking,
   runtimeEnv?: Record<string, unknown>,
+  pricing: PricingConfig = DEFAULT_PRICING_CONFIG,
 ): Promise<BookingBroomResult> {
   const baseUrl = env("BOOKING_BROOM_URL", runtimeEnv)?.replace(/\/$/, "");
   const apiKey = env("BOOKING_BROOM_API_KEY", runtimeEnv);
@@ -142,7 +144,7 @@ export async function forwardToBookingBroom(
         preferred_date: booking.preferredDate,
         preferred_time: formatTimeWindow(booking.timeWindow),
         notes: buildNotes(booking),
-        property: buildProperty(booking),
+        property: buildProperty(booking, pricing),
         quote: buildQuote(booking),
       }),
     });

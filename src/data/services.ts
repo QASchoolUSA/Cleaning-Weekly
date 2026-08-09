@@ -1,3 +1,5 @@
+import { startingPriceFor } from "../config/pricing";
+
 export type PricingFieldType = "number" | "select";
 
 export interface PricingFieldOption {
@@ -25,6 +27,7 @@ export interface ServiceDefinition {
   metaDescription: string;
   heroImage: string;
   heroAlt: string;
+  /** Derived from the pricing config — the cheapest this service can quote. */
   startingPrice: number;
   priceUnit: "week" | "visit" | "project";
   includedItems: string[];
@@ -46,7 +49,7 @@ export const services: ServiceDefinition[] = [
     heroImage:
       "https://images.unsplash.com/photo-1770584427107-d1649242c2b1?auto=format&fit=crop&w=1400&q=80",
     heroAlt: "Bright, tidy living room with natural light after a weekly clean",
-    startingPrice: 129,
+    startingPrice: startingPriceFor("home-cleaning"),
     priceUnit: "week",
     includedItems: [
       "Kitchen counters, sinks, and appliance fronts",
@@ -122,7 +125,7 @@ export const services: ServiceDefinition[] = [
     heroImage:
       "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1400&q=80",
     heroAlt: "Clean, modern office workspace ready for the week ahead",
-    startingPrice: 199,
+    startingPrice: startingPriceFor("office-cleaning"),
     priceUnit: "week",
     includedItems: [
       "Reception and common area cleaning",
@@ -190,7 +193,7 @@ export const services: ServiceDefinition[] = [
     heroImage:
       "https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=1400&q=80",
     heroAlt: "Professional cleaner carefully wiping a home surface during a deep clean",
-    startingPrice: 229,
+    startingPrice: startingPriceFor("deep-cleaning"),
     priceUnit: "visit",
     includedItems: [
       "Everything in a standard home clean",
@@ -255,7 +258,7 @@ export const services: ServiceDefinition[] = [
     heroImage:
       "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1400&q=80",
     heroAlt: "Clean empty home with bright natural light ready for move-in",
-    startingPrice: 249,
+    startingPrice: startingPriceFor("move-in-out"),
     priceUnit: "project",
     includedItems: [
       "Full kitchen and appliance cleaning",
@@ -320,7 +323,7 @@ export const services: ServiceDefinition[] = [
     heroImage:
       "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=1400&q=80",
     heroAlt: "Construction site interior ready for final cleaning pass",
-    startingPrice: 299,
+    startingPrice: startingPriceFor("post-construction"),
     priceUnit: "project",
     includedItems: [
       "Fine dust removal from surfaces and fixtures",
@@ -380,7 +383,7 @@ export const services: ServiceDefinition[] = [
     heroImage:
       "https://images.unsplash.com/photo-1560185127-6ed189bf02f4?auto=format&fit=crop&w=1400&q=80",
     heroAlt: "Guest-ready short-term rental bedroom styled for check-in",
-    startingPrice: 119,
+    startingPrice: startingPriceFor("airbnb-turnover"),
     priceUnit: "visit",
     includedItems: [
       "Full clean between guest stays",
