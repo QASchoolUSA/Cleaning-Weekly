@@ -5,7 +5,8 @@
 
 import type { StoredBooking } from "./schemas";
 import { formatTimeWindow } from "./schemas";
-import { formatPrice } from "./pricing";
+import { getServiceBySlug } from "../data/services";
+import { sqftBandLabel } from "./sqft-bands";
 
 export interface BookingBroomResult {
   forwarded: boolean;
@@ -13,29 +14,90 @@ export interface BookingBroomResult {
   error?: string;
 }
 
+/** Only what the structured property and quote fields cannot carry. */
 function buildNotes(booking: StoredBooking): string {
   const parts: string[] = [];
 
   if (booking.notes) parts.push(booking.notes);
-
   parts.push(`Booking ID: ${booking.id}`);
-  parts.push(`Estimate: ${formatPrice(booking.estimatedPrice, booking.priceUnit)}`);
+
+  const structured = new Set(["bedrooms", "bathrooms", "sqft", "frequency"]);
+  const extras = Object.entries(booking.pricingDetails)
+    .filter(([key]) => !structured.has(key))
+    .filter(([, value]) => value !== "" && value !== undefined && value !== null)
+    .map(([key, value]) => `${fieldLabel(booking, key)}: ${optionLabel(booking, key, value)}`);
+  if (extras.length > 0) {
+    parts.push(extras.join("; "));
+  }
 
   if (booking.lineItems.length > 0) {
     parts.push(
-      "Line items: " +
+      "Price breakdown: " +
         booking.lineItems.map((item) => `${item.label} ($${item.amount})`).join("; "),
     );
   }
 
-  const details = Object.entries(booking.pricingDetails)
-    .filter(([, value]) => value !== "" && value !== undefined && value !== null)
-    .map(([key, value]) => `${key}: ${value}`);
-  if (details.length > 0) {
-    parts.push("Details: " + details.join("; "));
-  }
-
   return parts.join("\n");
+}
+
+function pricingField(booking: StoredBooking, fieldId: string) {
+  return getServiceBySlug(booking.serviceSlug)?.pricingFields.find(
+    (f) => f.id === fieldId,
+  );
+}
+
+function fieldLabel(booking: StoredBooking, fieldId: string): string {
+  return pricingField(booking, fieldId)?.label ?? fieldId;
+}
+
+/** Selects store their value ("biweekly"); managers want the label ("Every 2 weeks"). */
+function optionLabel(
+  booking: StoredBooking,
+  fieldId: string,
+  value: string | number,
+): string {
+  const field = pricingField(booking, fieldId);
+  const option = field?.options?.find((o) => o.value === String(value));
+  return option?.label ?? String(value);
+}
+
+function numericDetail(booking: StoredBooking, fieldId: string): number | undefined {
+  const value = booking.pricingDetails[fieldId];
+  const num = typeof value === "number" ? value : Number(value);
+  return Number.isFinite(num) ? num : undefined;
+}
+
+function buildProperty(booking: StoredBooking) {
+  const sqft = numericDetail(booking, "sqft");
+
+  const property = {
+    bedrooms: numericDetail(booking, "bedrooms"),
+    bathrooms: numericDetail(booking, "bathrooms"),
+    // The wizard collects a band, so report the band rather than its midpoint.
+    size_label: sqft === undefined ? undefined : sqftBandLabel(sqft),
+  };
+
+  return Object.values(property).some((value) => value !== undefined)
+    ? property
+    : undefined;
+}
+
+const PAYMENT_TERMS: Record<StoredBooking["priceUnit"], string> = {
+  week: "Billed weekly after each visit",
+  visit: "Due after the cleaning is complete",
+  project: "Due on project completion",
+};
+
+function buildQuote(booking: StoredBooking) {
+  const frequency = booking.pricingDetails.frequency;
+
+  return {
+    estimate: booking.estimatedPrice,
+    currency: "USD",
+    service_level: booking.serviceTitle,
+    frequency: frequency ? optionLabel(booking, "frequency", frequency) : undefined,
+    payment_terms: PAYMENT_TERMS[booking.priceUnit],
+  };
 }
 
 function env(name: string, runtimeEnv?: Record<string, unknown>): string | undefined {
@@ -80,6 +142,8 @@ export async function forwardToBookingBroom(
         preferred_date: booking.preferredDate,
         preferred_time: formatTimeWindow(booking.timeWindow),
         notes: buildNotes(booking),
+        property: buildProperty(booking),
+        quote: buildQuote(booking),
       }),
     });
 

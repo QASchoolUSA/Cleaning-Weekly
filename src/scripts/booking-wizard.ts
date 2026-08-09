@@ -1,4 +1,5 @@
 import { services } from "../data/services";
+import { SQFT_BANDS, sqftBandFor } from "../lib/sqft-bands";
 import {
   getInitialState,
   getService,
@@ -163,6 +164,79 @@ function fieldHint(fieldId: string): string {
   return hints[fieldId] ?? "";
 }
 
+/** Small counts and square footage answer faster as pills than as steppers. */
+function pillChoices(
+  field: (typeof services)[0]["pricingFields"][0],
+): { label: string; value: number }[] | null {
+  if (field.type !== "number") return null;
+
+  const min = field.min ?? 0;
+  const max = field.max ?? 99;
+
+  if (field.id === "sqft" && max <= 8000) return SQFT_BANDS;
+
+  if (max - min <= 7) {
+    return Array.from({ length: max - min + 1 }, (_, i) => {
+      const value = min + i;
+      const label =
+        value === 0 ? "Studio" : value === max ? `${value}+` : String(value);
+      return { label, value };
+    });
+  }
+
+  return null;
+}
+
+function renderPillField(
+  field: (typeof services)[0]["pricingFields"][0],
+  choices: { label: string; value: number }[],
+  value: string | number,
+) {
+  const numValue = Number(value);
+  const selected =
+    field.id === "sqft" ? sqftBandFor(numValue).value : numValue;
+  const hints = [
+    field.id === "sqft" ? "Not sure? Pick the closest range." : "",
+    fieldHint(field.id),
+  ].filter(Boolean);
+  const hintHtml = hints.length
+    ? `<p class="field-hint">${hints.join(" ")}</p>`
+    : "";
+
+  return `
+    <fieldset class="field field--pills">
+      <legend>${field.label}</legend>
+      <div class="wizard-pills" role="radiogroup" aria-label="${field.label}">
+        ${choices
+          .map(
+            (choice) => `
+          <button
+            type="button"
+            class="wizard-pill ${choice.value === selected ? "is-selected" : ""}"
+            role="radio"
+            aria-checked="${choice.value === selected}"
+            data-pill-field="${field.id}"
+            data-pill-value="${choice.value}"
+          >${choice.label}</button>`,
+          )
+          .join("")}
+      </div>
+      ${hintHtml}
+      <input
+        id="field-${field.id}"
+        name="${field.id}"
+        type="number"
+        class="sr-only"
+        data-pricing-field
+        value="${selected}"
+        tabindex="-1"
+        aria-hidden="true"
+        readonly
+      />
+      <p class="field-error" id="error-${field.id}" hidden></p>
+    </fieldset>`;
+}
+
 function renderStepperField(
   field: (typeof services)[0]["pricingFields"][0],
   value: string | number,
@@ -219,7 +293,10 @@ function renderField(
   value: string | number,
 ) {
   if (field.type === "number") {
-    return renderStepperField(field, value);
+    const choices = pillChoices(field);
+    return choices
+      ? renderPillField(field, choices, value)
+      : renderStepperField(field, value);
   }
 
   const hint = fieldHint(field.id);
@@ -438,6 +515,13 @@ function bindStepListeners() {
       });
     });
 
+    stepContainer.querySelectorAll<HTMLButtonElement>("[data-pill-field]").forEach((btn) => {
+      btn.addEventListener("click", (event) => {
+        event.preventDefault();
+        selectPill(btn.dataset.pillField!, Number(btn.dataset.pillValue));
+      });
+    });
+
     stepContainer.querySelectorAll<HTMLButtonElement>("[data-stepper-dec]").forEach((btn) => {
       btn.addEventListener("click", (event) => {
         event.preventDefault();
@@ -459,6 +543,25 @@ function bindStepListeners() {
       renderStep();
     });
   }
+}
+
+function selectPill(fieldId: string, value: number) {
+  state.pricingDetails[fieldId] = value;
+  state = updateEstimate(state);
+
+  const input = stepContainer.querySelector<HTMLInputElement>(`#field-${fieldId}`);
+  if (input) input.value = String(value);
+
+  stepContainer
+    .querySelectorAll<HTMLButtonElement>(`[data-pill-field="${fieldId}"]`)
+    .forEach((btn) => {
+      const selected = Number(btn.dataset.pillValue) === value;
+      btn.classList.toggle("is-selected", selected);
+      btn.setAttribute("aria-checked", String(selected));
+    });
+
+  renderEstimate();
+  updateStep2Breakdown();
 }
 
 function adjustStepper(fieldId: string, direction: -1 | 1) {

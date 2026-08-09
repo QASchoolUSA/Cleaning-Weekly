@@ -315,6 +315,66 @@
   color: var(--ink);
 }
 
+/* Pill selectors (bedrooms, bathrooms, square footage) */
+.field--pills {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.field--pills legend {
+  margin-bottom: var(--space-2);
+  padding: 0;
+  font-weight: 600;
+  font-size: 0.875rem;
+}
+
+.wizard-fields .field--pills input.sr-only {
+  position: absolute;
+  width: 1px;
+  min-width: 0;
+  height: 1px;
+  min-height: 0;
+}
+
+.wizard-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.wizard-pill {
+  min-height: 2.75rem;
+  padding: var(--space-2) var(--space-4);
+  border: 1.5px solid var(--border);
+  border-radius: 999px;
+  background: var(--ground);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-user-select: none;
+  user-select: none;
+  transition:
+    border-color var(--duration) var(--ease-out),
+    background-color var(--duration) var(--ease-out),
+    color var(--duration) var(--ease-out);
+}
+
+.wizard-pill:hover:not(.is-selected) {
+  border-color: var(--teal);
+}
+
+.wizard-pill.is-selected {
+  border-color: var(--teal);
+  background: var(--teal);
+  color: var(--ink-on-teal);
+}
+
 /* Fields */
 .wizard-fields {
   display: grid;
