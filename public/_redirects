@@ -1,7 +1,2 @@
-# Force apex host (www → non-www)
-https://www.cleaningweekly.com/* https://cleaningweekly.com/:splat 301
-http://www.cleaningweekly.com/* https://cleaningweekly.com/:splat 301
-http://cleaningweekly.com/* https://cleaningweekly.com/:splat 301
-
-# Canonical sitemap path expected by many crawlers / GSC tools
-/sitemap.xml /sitemap-index.xml 301
+# Host-level www→apex redirects are handled in Cloudflare (absolute URLs
+# are rejected in Workers _redirects). Keep this file for relative rules only.

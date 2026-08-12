@@ -8,10 +8,6 @@ export default defineConfig({
   site: "https://cleaningweekly.com",
   output: "static",
   adapter: cloudflare(),
-  redirects: {
-    // Many crawlers and tools only probe /sitemap.xml
-    "/sitemap.xml": "/sitemap-index.xml",
-  },
   integrations: [
     sitemap({
       filter: (page) => !page.includes("/book/confirmation"),
