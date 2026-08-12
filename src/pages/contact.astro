@@ -4,6 +4,7 @@ export const prerender = true;
 import BaseLayout from "../layouts/BaseLayout.astro";
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
+import QuoteForm from "../components/QuoteForm.astro";
 import { siteConfig } from "../config/site";
 import { breadcrumbJsonLd } from "../lib/schema";
 
@@ -26,6 +27,8 @@ const description = `Contact Cleaning Weekly at ${siteConfig.email}. Mobile serv
         </p>
       </div>
     </section>
+
+    <QuoteForm />
 
     <section class="section">
       <div class="container contact-grid">

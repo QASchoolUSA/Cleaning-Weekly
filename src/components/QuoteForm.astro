@@ -212,12 +212,43 @@
     status.dataset.variant = "loading";
     status.textContent = "Sending your request…";
 
-    await new Promise((resolve) => setTimeout(resolve, 700));
+    const formData = new FormData(form);
+    const payload = {
+      name: String(formData.get("name") ?? "").trim(),
+      email: String(formData.get("email") ?? "").trim(),
+      phone: String(formData.get("phone") ?? "").trim() || undefined,
+      service: String(formData.get("service") ?? ""),
+      city: String(formData.get("city") ?? "").trim(),
+      message: String(formData.get("message") ?? "").trim() || undefined,
+    };
 
-    form.hidden = true;
-    success.hidden = false;
-    status.hidden = true;
-    success.focus();
+    try {
+      const res = await fetch("/api/quote", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const data = (await res.json().catch(() => ({}))) as { ok?: boolean; error?: string };
+
+      if (!res.ok || !data.ok) {
+        status.hidden = false;
+        status.dataset.variant = "error";
+        status.textContent =
+          data.error ?? "Could not send your request. Please try again or email us.";
+        submit.disabled = false;
+        return;
+      }
+
+      form.hidden = true;
+      success.hidden = false;
+      status.hidden = true;
+      success.focus();
+    } catch {
+      status.hidden = false;
+      status.dataset.variant = "error";
+      status.textContent = "Could not send your request. Please try again or email us.";
+      submit.disabled = false;
+    }
   });
 
   resetBtn?.addEventListener("click", () => {

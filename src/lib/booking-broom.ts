@@ -110,20 +110,24 @@ function env(name: string, runtimeEnv?: Record<string, unknown>): string | undef
   return undefined;
 }
 
-export async function forwardToBookingBroom(
-  booking: StoredBooking,
-  runtimeEnv?: Record<string, unknown>,
-  pricing: PricingConfig = DEFAULT_PRICING_CONFIG,
-): Promise<BookingBroomResult> {
+function getBookingBroomConfig(runtimeEnv?: Record<string, unknown>) {
   const baseUrl = env("BOOKING_BROOM_URL", runtimeEnv)?.replace(/\/$/, "");
   const apiKey = env("BOOKING_BROOM_API_KEY", runtimeEnv);
   const siteSlug = env("BOOKING_BROOM_SITE_SLUG", runtimeEnv) || "cleaning-weekly";
+  return { baseUrl, apiKey, siteSlug };
+}
+
+async function postToBookingBroom(
+  payload: Record<string, unknown>,
+  runtimeEnv?: Record<string, unknown>,
+): Promise<BookingBroomResult> {
+  const { baseUrl, apiKey, siteSlug } = getBookingBroomConfig(runtimeEnv);
 
   if (!baseUrl || !apiKey) {
     console.info(
       "[booking-broom] BOOKING_BROOM_URL / BOOKING_BROOM_API_KEY not set — skip forward",
     );
-    return { forwarded: false };
+    return { forwarded: false, error: "Booking service is not configured" };
   }
 
   try {
@@ -133,17 +137,7 @@ export async function forwardToBookingBroom(
       body: JSON.stringify({
         site_slug: siteSlug,
         api_key: apiKey,
-        customer_name: booking.name,
-        email: booking.email,
-        phone: booking.phone,
-        address: `${booking.streetAddress}, ${booking.city}`,
-        service_type: booking.serviceTitle,
-        preferred_date: booking.preferredDate,
-        preferred_time: formatTimeWindow(booking.timeWindow),
-        notes: buildNotes(booking),
-        intent: "book",
-        property: buildProperty(booking, pricing),
-        quote: buildQuote(booking),
+        ...payload,
       }),
     });
 
@@ -161,4 +155,56 @@ export async function forwardToBookingBroom(
     console.error("[booking-broom] forward error:", message);
     return { forwarded: false, error: message };
   }
+}
+
+export async function forwardToBookingBroom(
+  booking: StoredBooking,
+  runtimeEnv?: Record<string, unknown>,
+  pricing: PricingConfig = DEFAULT_PRICING_CONFIG,
+): Promise<BookingBroomResult> {
+  return postToBookingBroom(
+    {
+      customer_name: booking.name,
+      email: booking.email,
+      phone: booking.phone,
+      address: `${booking.streetAddress}, ${booking.city}`,
+      service_type: booking.serviceTitle,
+      preferred_date: booking.preferredDate,
+      preferred_time: formatTimeWindow(booking.timeWindow),
+      notes: buildNotes(booking),
+      intent: "book",
+      property: buildProperty(booking, pricing),
+      quote: buildQuote(booking),
+    },
+    runtimeEnv,
+  );
+}
+
+export type QuoteForwardInput = {
+  name: string;
+  email: string;
+  phone?: string;
+  serviceType: string;
+  city: string;
+  message?: string;
+};
+
+export async function forwardQuoteToBookingBroom(
+  quote: QuoteForwardInput,
+  runtimeEnv?: Record<string, unknown>,
+): Promise<BookingBroomResult> {
+  const notes = [quote.message?.trim(), `City: ${quote.city}`].filter(Boolean).join("\n");
+
+  return postToBookingBroom(
+    {
+      customer_name: quote.name,
+      email: quote.email,
+      phone: quote.phone?.trim() || undefined,
+      address: quote.city,
+      service_type: quote.serviceType,
+      notes: notes || undefined,
+      intent: "quote",
+    },
+    runtimeEnv,
+  );
 }
