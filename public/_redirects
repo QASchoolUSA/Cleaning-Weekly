@@ -2,3 +2,6 @@
 https://www.cleaningweekly.com/* https://cleaningweekly.com/:splat 301
 http://www.cleaningweekly.com/* https://cleaningweekly.com/:splat 301
 http://cleaningweekly.com/* https://cleaningweekly.com/:splat 301
+
+# Canonical sitemap path expected by many crawlers / GSC tools
+/sitemap.xml /sitemap-index.xml 301
