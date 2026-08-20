@@ -10,7 +10,7 @@ import { getServiceBySlug } from "../../data/services";
 import { getPricingConfig } from "../../lib/pricing-config";
 import { getRuntimeEnv } from "../../lib/runtime-env";
 
-export const POST: APIRoute = async ({ request }) => {
+export const POST: APIRoute = async ({ request, locals }) => {
   try {
     const body = await request.json();
     const parsed = bookingPayloadSchema.safeParse(body);
@@ -35,7 +35,7 @@ export const POST: APIRoute = async ({ request }) => {
       });
     }
 
-    const runtimeEnv = await getRuntimeEnv();
+    const runtimeEnv = await getRuntimeEnv(locals);
 
     // Priced here, not from the client, and with the same config the wizard read.
     const { config } = await getPricingConfig(runtimeEnv);
@@ -73,8 +73,8 @@ export const POST: APIRoute = async ({ request }) => {
       emailsSent: false,
     };
 
-    // Emails + local JSON are best-effort (Node SMTP/fs). On Cloudflare Workers
-    // persistence is Booking Broom when configured — never fail the booking on those.
+    // Local JSON / SMTP are best-effort on Workers. Booking Broom is the
+    // source of truth — fail the request if the forward does not succeed.
     const emailsSent = await sendBookingEmails(booking);
     booking.emailsSent = emailsSent;
 
@@ -84,18 +84,31 @@ export const POST: APIRoute = async ({ request }) => {
     }
 
     const broom = await forwardToBookingBroom(booking, runtimeEnv, config);
-    if (broom.error) {
+    if (!broom.forwarded) {
       console.error("[api/book] Booking Broom forward failed:", broom.error);
+      return new Response(
+        JSON.stringify({
+          ok: false,
+          bookingId: booking.id,
+          bookingBroom: false,
+          error: broom.error ?? "Booking service is not configured",
+        }),
+        {
+          status: broom.error?.includes("not configured") ? 503 : 502,
+          headers: { "Content-Type": "application/json" },
+        },
+      );
     }
 
     return new Response(
       JSON.stringify({
         ok: true,
+        id: broom.id,
         bookingId: booking.id,
         estimatedPrice: booking.estimatedPrice,
         priceUnit: booking.priceUnit,
         emailsSent,
-        bookingBroom: broom.forwarded,
+        bookingBroom: true,
       }),
       { status: 200, headers: { "Content-Type": "application/json" } },
     );

@@ -1,18 +1,35 @@
 /**
- * The Worker's secrets (`.dev.vars` locally, `wrangler secret put` in
- * production). Astro v6 removed `Astro.locals.runtime.env`, and reading it now
- * throws, so every caller goes through here instead.
+ * Worker bindings (wrangler.jsonc vars + `wrangler secret put`).
  *
- * Imported dynamically because `cloudflare:workers` only resolves inside the
- * Workers runtime; anywhere else the callers fall back to `import.meta.env`.
+ * Prefer `locals` from the Astro API context. Dynamic `cloudflare:workers`
+ * import is a fallback — it often fails in the bundled Worker, which left
+ * BOOKING_BROOM_API_KEY unset and silently skipped the Booking Broom forward.
  */
-export async function getRuntimeEnv(): Promise<
-  Record<string, unknown> | undefined
-> {
+export async function getRuntimeEnv(
+  locals?: unknown,
+): Promise<Record<string, unknown> | undefined> {
+  const fromLocals = envFromLocals(locals);
+  if (fromLocals) return fromLocals;
+
   try {
     const { env } = await import("cloudflare:workers");
     return env as Record<string, unknown>;
   } catch {
     return undefined;
   }
+}
+
+function envFromLocals(locals: unknown): Record<string, unknown> | undefined {
+  if (!locals || typeof locals !== "object") return undefined;
+  const bag = locals as {
+    runtime?: { env?: Record<string, unknown> };
+    cloudflare?: { env?: Record<string, unknown> };
+  };
+  if (bag.runtime?.env && typeof bag.runtime.env === "object") {
+    return bag.runtime.env;
+  }
+  if (bag.cloudflare?.env && typeof bag.cloudflare.env === "object") {
+    return bag.cloudflare.env;
+  }
+  return undefined;
 }

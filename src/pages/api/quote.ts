@@ -5,7 +5,7 @@ import { forwardQuoteToBookingBroom } from "../../lib/booking-broom";
 import { quoteRequestSchema, quoteServiceLabel } from "../../lib/quote-schema";
 import { getRuntimeEnv } from "../../lib/runtime-env";
 
-export const POST: APIRoute = async ({ request }) => {
+export const POST: APIRoute = async ({ request, locals }) => {
   try {
     const body = await request.json();
     const parsed = quoteRequestSchema.safeParse(body);
@@ -22,7 +22,7 @@ export const POST: APIRoute = async ({ request }) => {
     }
 
     const payload = parsed.data;
-    const runtimeEnv = await getRuntimeEnv();
+    const runtimeEnv = await getRuntimeEnv(locals);
     const broom = await forwardQuoteToBookingBroom(
       {
         name: payload.name,

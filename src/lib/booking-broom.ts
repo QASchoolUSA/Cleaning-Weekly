@@ -100,12 +100,13 @@ function buildQuote(booking: StoredBooking) {
 
 function env(name: string, runtimeEnv?: Record<string, unknown>): string | undefined {
   if (runtimeEnv && typeof runtimeEnv[name] === "string") {
-    return runtimeEnv[name];
+    const value = runtimeEnv[name].trim();
+    return value || undefined;
   }
   const fromImport = (import.meta.env as Record<string, string | undefined>)[name];
-  if (fromImport) return fromImport;
+  if (fromImport?.trim()) return fromImport.trim();
   if (typeof process !== "undefined") {
-    return process.env[name];
+    return process.env[name]?.trim() || undefined;
   }
   return undefined;
 }

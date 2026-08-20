@@ -12,8 +12,8 @@ import { getRuntimeEnv } from "../../lib/runtime-env";
  * This endpoint is the one dynamic hop: it fetches the live config server-side
  * and hands the wizard the numbers only.
  */
-export const GET: APIRoute = async () => {
-  const runtimeEnv = await getRuntimeEnv();
+export const GET: APIRoute = async ({ locals }) => {
+  const runtimeEnv = await getRuntimeEnv(locals);
   const { config, live, version } = await getPricingConfig(runtimeEnv);
 
   return new Response(JSON.stringify({ config, live, version }), {
