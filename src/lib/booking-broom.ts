@@ -1,6 +1,6 @@
 /**
  * Forward a booking to Booking Broom (manager dashboard).
- * No-ops when BOOKING_BROOM_URL / BOOKING_BROOM_API_KEY are unset.
+ * No-ops when BOOKING_BROOM_API_KEY is unset. URL defaults to production.
  */
 
 import type { StoredBooking } from "./schemas";
@@ -112,7 +112,7 @@ function env(name: string, runtimeEnv?: Record<string, unknown>): string | undef
 }
 
 function getBookingBroomConfig(runtimeEnv?: Record<string, unknown>) {
-  const baseUrl = env("BOOKING_BROOM_URL", runtimeEnv)?.replace(/\/$/, "");
+  const baseUrl = (env("BOOKING_BROOM_URL", runtimeEnv) || "https://app.bookingbroom.com").replace(/\/$/, "");
   const apiKey = env("BOOKING_BROOM_API_KEY", runtimeEnv);
   const siteSlug = env("BOOKING_BROOM_SITE_SLUG", runtimeEnv) || "cleaning-weekly";
   return { baseUrl, apiKey, siteSlug };
@@ -126,7 +126,7 @@ async function postToBookingBroom(
 
   if (!baseUrl || !apiKey) {
     console.info(
-      "[booking-broom] BOOKING_BROOM_URL / BOOKING_BROOM_API_KEY not set — skip forward",
+      "[booking-broom] BOOKING_BROOM_API_KEY not set — skip forward",
     );
     return { forwarded: false, error: "Booking service is not configured" };
   }

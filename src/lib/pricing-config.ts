@@ -39,7 +39,7 @@ function env(name: string, runtimeEnv?: Record<string, unknown>): string | undef
 export async function getPricingConfig(
   runtimeEnv?: Record<string, unknown>,
 ): Promise<PricingConfigResult> {
-  const baseUrl = env("BOOKING_BROOM_URL", runtimeEnv)?.replace(/\/$/, "");
+  const baseUrl = (env("BOOKING_BROOM_URL", runtimeEnv) || "https://app.bookingbroom.com").replace(/\/$/, "");
   const apiKey = env("BOOKING_BROOM_API_KEY", runtimeEnv);
   if (!baseUrl || !apiKey) {
     return { config: DEFAULT_PRICING_CONFIG, live: false };

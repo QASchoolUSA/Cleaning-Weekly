@@ -1,5 +1,6 @@
 # Local worker secrets. Copy to .dev.vars (gitignored) and fill in.
 # In production these are set with `wrangler secret put <NAME>`.
-BOOKING_BROOM_URL=https://bookings.kedrik.com
+# Optional local override (defaults to https://app.bookingbroom.com)
+# BOOKING_BROOM_URL=http://localhost:3000
 BOOKING_BROOM_SITE_SLUG=cleaning-weekly
 BOOKING_BROOM_API_KEY=
