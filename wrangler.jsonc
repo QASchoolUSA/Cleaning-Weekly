@@ -12,7 +12,6 @@
 		"enabled": true
 	},
 	"vars": {
-		"BOOKING_BROOM_SITE_SLUG": "cleaning-weekly"
 	}
 	// BOOKING_BROOM_API_KEY is a secret, not a var. Set it with
 	// `wrangler secret put BOOKING_BROOM_API_KEY` for the deployed worker, and

@@ -114,7 +114,7 @@ function env(name: string, runtimeEnv?: Record<string, unknown>): string | undef
 function getBookingBroomConfig(runtimeEnv?: Record<string, unknown>) {
   const baseUrl = (env("BOOKING_BROOM_URL", runtimeEnv) || "https://app.bookingbroom.com").replace(/\/$/, "");
   const apiKey = env("BOOKING_BROOM_API_KEY", runtimeEnv);
-  const siteSlug = env("BOOKING_BROOM_SITE_SLUG", runtimeEnv) || "cleaning-weekly";
+  const siteSlug = "cleaning-weekly";
   return { baseUrl, apiKey, siteSlug };
 }
 

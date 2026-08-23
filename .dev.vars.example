@@ -2,5 +2,5 @@
 # In production these are set with `wrangler secret put <NAME>`.
 # Optional local override (defaults to https://app.bookingbroom.com)
 # BOOKING_BROOM_URL=http://localhost:3000
-BOOKING_BROOM_SITE_SLUG=cleaning-weekly
+# BOOKING_BROOM_SITE_SLUG hardcoded to cleaning-weekly in code — do not set
 BOOKING_BROOM_API_KEY=

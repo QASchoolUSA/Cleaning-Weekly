@@ -48,7 +48,7 @@ export async function getPricingConfig(
   try {
     const response = await fetch(`${baseUrl}/api/pricing`, {
       headers: {
-        "X-Site-Slug": env("BOOKING_BROOM_SITE_SLUG", runtimeEnv) || "cleaning-weekly",
+        "X-Site-Slug": "cleaning-weekly",
         "X-Api-Key": apiKey,
       },
     });
