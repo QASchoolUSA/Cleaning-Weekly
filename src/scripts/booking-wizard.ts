@@ -16,8 +16,10 @@ import {
   formatEstimate,
   type WizardState,
 } from "../lib/booking-wizard";
+import { createSoftLeadTracker } from "../lib/soft-lead";
 
 const catalog = getServiceCatalog();
+const softLead = createSoftLeadTracker();
 const params = new URLSearchParams(window.location.search);
 const initialService = params.get("service") ?? undefined;
 const skippedServicePicker = Boolean(
@@ -554,6 +556,33 @@ function bindStepListeners() {
       renderStep();
     });
   }
+
+  if (state.step === 3) {
+    const softLeadFields = [
+      "#name",
+      "#email",
+      "#phone",
+      "#streetAddress",
+      "#city",
+      "#notes",
+      "#preferredDate",
+    ];
+    softLeadFields.forEach((sel) => {
+      stepContainer.querySelector(sel)?.addEventListener("input", () => {
+        readStepInputs();
+      });
+      stepContainer.querySelector(sel)?.addEventListener("change", () => {
+        readStepInputs();
+      });
+    });
+    stepContainer
+      .querySelectorAll<HTMLInputElement>('input[name="timeWindow"]')
+      .forEach((input) => {
+        input.addEventListener("change", () => {
+          readStepInputs();
+        });
+      });
+  }
 }
 
 function selectPill(fieldId: string, value: number) {
@@ -681,6 +710,48 @@ function readStepInputs() {
     state.city = stepContainer.querySelector<HTMLInputElement>("#city")?.value ?? "";
     state.notes = stepContainer.querySelector<HTMLTextAreaElement>("#notes")?.value ?? "";
   }
+
+  scheduleSoftLead();
+}
+
+function scheduleSoftLead() {
+  const service = state.serviceSlug ? getService(state.serviceSlug) : undefined;
+  softLead.schedule({
+    customer_name: state.name || undefined,
+    email: state.email || undefined,
+    phone: state.phone || undefined,
+    address:
+      state.streetAddress || state.city
+        ? [state.streetAddress, state.city].filter(Boolean).join(", ")
+        : undefined,
+    service_type: service?.title,
+    preferred_date: state.preferredDate || undefined,
+    preferred_time: state.timeWindow || undefined,
+    notes: state.notes || undefined,
+    intent: "book",
+    last_step: STEP_LABELS[state.step - 1] ?? String(state.step),
+    quote: {
+      estimate:
+        state.estimate && state.estimate.total > 0
+          ? state.estimate.total
+          : undefined,
+      currency: "USD",
+    },
+    property: {
+      bedrooms:
+        typeof state.pricingDetails.bedrooms === "number"
+          ? state.pricingDetails.bedrooms
+          : undefined,
+      bathrooms:
+        typeof state.pricingDetails.bathrooms === "number"
+          ? state.pricingDetails.bathrooms
+          : undefined,
+      size_label:
+        typeof state.pricingDetails.sqft === "string"
+          ? state.pricingDetails.sqft
+          : undefined,
+    },
+  });
 }
 
 async function submitBooking() {
@@ -703,6 +774,7 @@ async function submitBooking() {
         streetAddress: state.streetAddress.trim(),
         city: state.city.trim(),
         notes: state.notes.trim(),
+        sessionKey: softLead.sessionKey,
       }),
     });
 

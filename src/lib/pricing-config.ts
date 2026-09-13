@@ -20,7 +20,7 @@ export interface PricingConfigResult {
 }
 
 /** Seconds the browser and any CDN in front of it may reuse a config. */
-export const PRICING_CACHE_SECONDS = 300;
+export const PRICING_CACHE_SECONDS = 45;
 
 function env(name: string, runtimeEnv?: Record<string, unknown>): string | undefined {
   if (runtimeEnv && typeof runtimeEnv[name] === "string") {

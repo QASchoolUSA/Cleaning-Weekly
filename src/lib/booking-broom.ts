@@ -176,6 +176,7 @@ export async function forwardToBookingBroom(
       intent: "book",
       property: buildProperty(booking, pricing),
       quote: buildQuote(booking),
+      ...(booking.sessionKey ? { session_key: booking.sessionKey } : {}),
     },
     runtimeEnv,
   );

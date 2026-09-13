@@ -15,6 +15,7 @@ export const bookingPayloadSchema = z.object({
   streetAddress: z.string().trim().min(5, "Street address is required"),
   city: z.string().trim().min(2, "City is required"),
   notes: z.string().trim().optional().default(""),
+  sessionKey: z.string().trim().min(8).optional(),
 });
 
 export type BookingPayload = z.infer<typeof bookingPayloadSchema>;
