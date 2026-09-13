@@ -1,7 +1,7 @@
 export const prerender = false;
 
 import type { APIRoute } from "astro";
-import { getRuntimeEnv } from "../../lib/runtime-env";
+import { getRuntimeEnv } from "../../../lib/runtime-env";
 
 function env(name: string, runtimeEnv?: Record<string, unknown>): string | undefined {
   if (runtimeEnv && typeof runtimeEnv[name] === "string") {
