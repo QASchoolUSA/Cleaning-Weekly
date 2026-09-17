@@ -59,8 +59,8 @@ export const services: ServiceDefinition[] = [
       "Trash emptied from main bins",
     ],
     localDetails: [
-      "Weekly home cleaning is designed for occupied Central Florida homes that need a dependable reset before dust, pet hair, kitchen splatter, and bathroom film become a larger project. The visit concentrates on the rooms used every day, while occasional detail tasks can be rotated into the checklist.",
-      "Homes around Orlando, Winter Park, Sanford, Kissimmee, and nearby communities vary from compact apartments to multi-story houses. Share floor type, stairs, pets, entry instructions, and priority rooms before the first visit so the schedule reflects how your household actually lives.",
+      "Weekly home cleaning for occupied Central Florida homes — kitchens, baths, floors, and the rooms you use every day. Dust, pet hair, and bathroom film get handled before they turn into a bigger job. Detail tasks can rotate into the checklist as needed.",
+      "Homes around Orlando, Winter Park, Sanford, and Kissimmee range from apartments to multi-story houses. Tell us about floors, stairs, pets, entry, and priority rooms before the first visit so the schedule matches how you actually live.",
     ],
     bestFor: ["Families with full school-week schedules", "Homes with pets or frequent guests", "Clients who prefer a consistent weekly team", "Households maintaining a recent deep clean"],
     faq: [
@@ -135,8 +135,8 @@ export const services: ServiceDefinition[] = [
       "Trash and recycling removal",
     ],
     localDetails: [
-      "Recurring office cleaning keeps client-facing and shared spaces ready without interrupting the workday. The scope can prioritize reception areas, restrooms, break rooms, floors, touchpoints, and agreed workstation surfaces rather than applying a residential checklist to a commercial space.",
-      "Central Florida offices may need early-morning or after-hours access, alarm procedures, and building-specific waste rules. A clear site contact and supply-restocking list help each visit run consistently, especially in multi-suite buildings.",
+      "Recurring office cleaning keeps reception, restrooms, break rooms, and workspaces ready without interrupting the workday. We use a commercial checklist — not a residential one remixed for an office.",
+      "Central Florida offices often need early-morning or after-hours access, alarm codes, and building waste rules. Give us a site contact and supply list so each visit runs the same way, especially in multi-suite buildings.",
     ],
     bestFor: ["Professional offices and small suites", "Reception areas with regular client traffic", "Teams that need after-hours service", "Workplaces wanting one predictable weekly invoice"],
     faq: [
@@ -203,8 +203,8 @@ export const services: ServiceDefinition[] = [
       "Extra bathroom scrub and grout attention",
     ],
     localDetails: [
-      "Deep cleaning rebuilds the baseline when routine wiping no longer catches up. It gives extra time to baseboards, door frames, fans, fixtures, bathroom buildup, and kitchen detail work so later maintenance visits can focus on keeping the home comfortable.",
-      "Central Florida humidity and year-round air-conditioning can make dust collect around vents and moisture linger in bathrooms. Deep cleaning addresses visible buildup, but active leaks, extensive mold, pests, and hazardous materials require the appropriate specialist.",
+      "Deep cleaning is the thorough reset when weekly wiping is not enough. Extra time goes to baseboards, door frames, fans, fixtures, bathroom buildup, and kitchen details so later maintenance visits can stay lighter.",
+      "Central Florida humidity and year-round AC push dust toward vents and leave moisture in bathrooms. We handle visible buildup; active leaks, mold remediation, pests, and hazardous materials need specialists.",
     ],
     bestFor: ["First-time professional-cleaning clients", "Homes preparing for recurring service", "Seasonal resets after pollen or holidays", "Spaces with visible dust and bathroom buildup"],
     faq: [
@@ -268,8 +268,8 @@ export const services: ServiceDefinition[] = [
       "Window sills and interior glass cleaned",
     ],
     localDetails: [
-      "Move-in and move-out cleaning works best after boxes and furniture are removed. Empty cabinets, open floor area, and active water and electricity allow cleaners to reach the surfaces that landlords, buyers, and new residents inspect most closely.",
-      "Rental and home-sale timelines across Central Florida can be tight, so schedule the clean between the final move and key handoff whenever possible. Review your lease or walkthrough checklist first; carpet extraction, hauling, wall repair, and exterior pressure washing may need separate vendors.",
+      "Move-in and move-out cleaning works best once boxes and furniture are out. Empty cabinets, open floors, and working water and power let us reach the surfaces landlords, buyers, and new residents check first.",
+      "Central Florida move timelines are often tight — schedule the clean between the final load-out and key handoff when you can. Check your lease or walkthrough list first; carpet extraction, hauling, wall repair, and exterior pressure washing usually need other vendors.",
     ],
     bestFor: ["Renters preparing for a walkthrough", "Landlords between occupants", "Buyers wanting a clean start", "Sellers cleaning after movers leave"],
     faq: [
@@ -333,8 +333,8 @@ export const services: ServiceDefinition[] = [
       "Debris bagging and disposal coordination",
     ],
     localDetails: [
-      "Post-construction cleaning is a fine-dust and finish-detail service, not a substitute for contractor debris removal. It should begin after sanding, cutting, and punch-list work are complete so newly cleaned ledges, tracks, cabinets, and floors are not immediately coated again.",
-      "Renovations and new construction around Central Florida often leave drywall film in air returns, window tracks, cabinet interiors, and on horizontal surfaces. Share project photos and floor-care instructions before quoting; paint, adhesives, hazardous waste, and active construction may require specialist handling.",
+      "Post-construction cleaning handles fine dust and finish detail — not contractor debris removal. Wait until sanding, cutting, and punch-list work are done so ledges, tracks, cabinets, and floors stay clean.",
+      "Renovations around Central Florida leave drywall film in air returns, window tracks, cabinet interiors, and on every flat surface. Send project photos and floor-care notes before we quote; paint, adhesives, hazardous waste, and active construction need specialists.",
     ],
     bestFor: ["Finished kitchen or bathroom renovations", "New-build final cleaning", "Homes after flooring or drywall work", "Contractors preparing for owner handoff"],
     faq: [
@@ -393,8 +393,8 @@ export const services: ServiceDefinition[] = [
       "Damage report with photos on request",
     ],
     localDetails: [
-      "Vacation-rental turnover cleaning is a deadline-driven reset between checkout and check-in. The team follows an agreed room checklist, reports visible concerns, and prepares beds, bathrooms, kitchens, and floors for the next arrival.",
-      "Hosts near Orlando attractions and across Central Florida should provide parking, gate codes, linen plans, owner-closet rules, restocking par levels, and the true turnover window. Keeping backup linens on site reduces the risk that laundry delays the entire clean.",
+      "Airbnb turnover cleaning is a same-day reset between checkout and check-in. We follow your room checklist, note anything that looks off, and leave beds, baths, kitchens, and floors ready for the next guests.",
+      "Hosts near Orlando attractions should share parking, gate codes, linen plans, owner-closet rules, restock levels, and the real turnover window. Keep backup linens on site so laundry delays do not blow the whole clean.",
     ],
     bestFor: ["Airbnb and Vrbo hosts", "Property managers with repeat turnovers", "Owners needing photo-ready resets", "Rentals with documented supply lists"],
     faq: [
