@@ -11,13 +11,13 @@ import {
 
 export type { SqftBand };
 
-export const SQFT_BANDS: SqftBand[] = DEFAULT_PRICING_CONFIG.sqftBands;
+export const SQFT_BANDS: SqftBand[] = DEFAULT_PRICING_CONFIG.sqftPresets;
 
 export function sqftBandFor(
   value: number,
   config: PricingConfig = DEFAULT_PRICING_CONFIG,
 ): SqftBand {
-  return config.sqftBands.reduce((closest, band) =>
+  return config.sqftPresets.reduce((closest, band) =>
     Math.abs(band.value - value) < Math.abs(closest.value - value) ? band : closest,
   );
 }
@@ -26,5 +26,5 @@ export function sqftBandLabel(
   value: number,
   config: PricingConfig = DEFAULT_PRICING_CONFIG,
 ): string {
-  return `${sqftBandFor(value, config).label} sq ft`;
+  return sqftBandFor(value, config).label;
 }

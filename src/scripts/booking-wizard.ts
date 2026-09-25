@@ -186,7 +186,7 @@ function pillChoices(
   const min = field.min ?? 0;
   const max = field.max ?? 99;
 
-  if (field.id === "sqft" && max <= 8000) return pricingConfig.sqftBands;
+  if (field.id === "sqft" && max <= 8000) return pricingConfig.sqftPresets;
 
   if (max - min <= 7) {
     return Array.from({ length: max - min + 1 }, (_, i) => {
