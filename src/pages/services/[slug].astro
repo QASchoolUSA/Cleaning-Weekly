@@ -5,6 +5,7 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 import Header from "../../components/Header.astro";
 import Footer from "../../components/Footer.astro";
 import ServicePageContent from "../../components/ServicePageContent.astro";
+import { cities } from "../../data/cities";
 import { services } from "../../data/services";
 import { breadcrumbJsonLd, faqPageJsonLd, servicePageJsonLd } from "../../lib/schema";
 
@@ -28,6 +29,30 @@ const path = `/services/${service.slug}`;
   <Header />
   <main id="main">
     <ServicePageContent service={service} />
+
+    <section class="service-areas section section--surface" aria-labelledby="service-areas-heading">
+      <div class="container">
+        <h2 id="service-areas-heading" class="headline service-areas__title">
+          Available in your city
+        </h2>
+        <p class="service-areas__lead">
+          We serve near you across Central Florida. Pick your city for local {service.shortTitle.toLowerCase()}{" "}
+          cleaning details, neighborhoods, and booking.
+        </p>
+        <ul class="service-areas__list">
+          {cities.map((city) => (
+            <li>
+              <a
+                class="service-areas__link"
+                href={`/locations/${city.slug}/${service.slug}`}
+              >
+                {service.title} in {city.name}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
   </main>
   <Footer />
 
@@ -50,3 +75,54 @@ const path = `/services/${service.slug}`;
     )}
   />
 </BaseLayout>
+
+<style>
+  .service-areas__title {
+    margin: 0 0 var(--space-3);
+    font-size: clamp(1.5rem, 3vw, 2rem);
+    color: var(--teal-deep);
+  }
+
+  .service-areas__lead {
+    margin: 0 0 var(--space-8);
+    max-width: 48ch;
+    color: var(--ink-secondary);
+  }
+
+  .service-areas__list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  .service-areas__link {
+    display: block;
+    padding: var(--space-4) var(--space-5);
+    text-decoration: none;
+    font-weight: 500;
+    color: var(--teal-deep);
+    background: var(--ground);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    transition: border-color var(--duration) var(--ease-out);
+  }
+
+  .service-areas__link:hover {
+    border-color: var(--teal-soft);
+    text-decoration: underline;
+  }
+
+  @media (min-width: 640px) {
+    .service-areas__list {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .service-areas__list {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+</style>

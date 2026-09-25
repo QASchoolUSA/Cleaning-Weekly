@@ -5,6 +5,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
 import QuoteForm from "../components/QuoteForm.astro";
+import { cities } from "../data/cities";
 import { siteConfig } from "../config/site";
 import { breadcrumbJsonLd } from "../lib/schema";
 
@@ -58,6 +59,32 @@ const description = `Contact Cleaning Weekly at ${siteConfig.email}. Mobile serv
             <a href="/locations">locations</a> or read more{" "}
             <a href="/about">about Cleaning Weekly</a>.
           </p>
+          <p>
+            We cover the Orlando metro and nearby corridors—including{" "}
+            <a href="/locations/sanford">Sanford</a>,{" "}
+            <a href="/locations/orlando">Orlando</a>,{" "}
+            <a href="/locations/winter-park">Winter Park</a>,{" "}
+            <a href="/locations/kissimmee">Kissimmee</a>,{" "}
+            <a href="/locations/apopka">Apopka</a>, and{" "}
+            <a href="/locations/oviedo">Oviedo</a>. Each city hub lists local neighborhoods,
+            services, and how weekly rates typically compare to the Orlando core.
+          </p>
+          <p>
+            Not sure which hub fits your address? Start with the city closest to you, or tell us
+            your ZIP when you email—routes run across Central Florida as long as the stop fits the
+            day&apos;s schedule. Sanford and the Lake Mary corridor are a common north-end
+            anchor; see{" "}
+            <a href="/locations/sanford">Cleaning Weekly in Sanford</a> for that area, then jump
+            to other hubs from the list above or the full{" "}
+            <a href="/locations">locations directory</a>.
+          </p>
+          <ul class="contact-hubs">
+            {cities.map((city) => (
+              <li>
+                <a href={`/locations/${city.slug}`}>{city.name}</a>
+              </li>
+            ))}
+          </ul>
           <p class="contact-note mono">
             Phone: not published yet. We will list a real number here once it is assigned—no
             placeholders.
@@ -139,6 +166,20 @@ const description = `Contact Cleaning Weekly at ${siteConfig.email}. Mobile serv
     margin-top: var(--space-4);
     font-size: 0.875rem;
     color: var(--ink-secondary);
+  }
+
+  .contact-hubs {
+    margin: 0 0 var(--space-4);
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3) var(--space-5);
+  }
+
+  .contact-hubs a {
+    color: var(--teal-deep);
+    font-weight: 500;
   }
 
   @media (min-width: 768px) {
