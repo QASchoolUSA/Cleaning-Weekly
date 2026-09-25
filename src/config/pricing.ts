@@ -1,12 +1,14 @@
-export type Frequency = "weekly" | "biweekly" | "monthly";
-export type DebrisLevel = "light" | "medium" | "heavy";
+export type Frequency = "weekly" | "biweekly" | "monthly" | "one-time";
 export type TimeWindow = "morning" | "afternoon" | "flexible";
 
-export interface LabelledMultiplier {
-  key: string;
-  label: string;
-  multiplier: number;
-}
+export type ServiceTypeId =
+  | "house"
+  | "apartment"
+  | "move"
+  | "airbnb"
+  | "post-construction"
+  | "maintenance"
+  | "deep";
 
 export interface SqftBand {
   label: string;
@@ -14,178 +16,157 @@ export interface SqftBand {
 }
 
 /**
- * Every number the quote engine uses. Booking Broom stores this same shape per
- * site, so an edit there arrives here whole rather than as a patch.
+ * Every number this site charges. Booking Broom is the source of truth; the
+ * values below are used whenever the dashboard cannot be reached.
  */
 export interface PricingConfig {
-  kind: "per-service-branch";
-  homeCleaning: {
-    base: number;
-    perBed: number;
-    perBath: number;
-    per500SqFt: number;
-    includedBedrooms: number;
-    includedBathrooms: number;
-    includedSqFt: number;
-    frequencyMultipliers: LabelledMultiplier[];
-  };
-  officeCleaning: {
-    base: number;
-    per500SqFt: number;
-    perRestroom: number;
-    includedRestrooms: number;
-    includedSqFt: number;
-    frequencyMultipliers: LabelledMultiplier[];
-  };
-  /** Applied to a weekly home clean. */
-  deepCleaningMultiplier: number;
-  moveInOut: {
-    base: number;
-    perBed: number;
-    perBath: number;
-    per500SqFt: number;
-    includedBedrooms: number;
-    includedBathrooms: number;
-    includedSqFt: number;
-  };
-  postConstruction: {
-    base: number;
-    per500SqFt: number;
-    includedSqFt: number;
-    debrisMultipliers: LabelledMultiplier[];
-  };
-  airbnbTurnover: {
-    base: number;
-    perBed: number;
-    perBath: number;
-    includedBedrooms: number;
-    includedBathrooms: number;
-    /** Charged per visit once the monthly turnover count passes the threshold. */
-    highVolumeMultiplier: number;
-    highVolumeThreshold: number;
-  };
-  sqftBands: SqftBand[];
+  kind: "sqft-rate-min";
+  serviceRates: { key: string; perSqft: number; minBase: number }[];
+  bedroomRate: number;
+  bathroomRate: number;
+  frequencyMultipliers: { key: string; label: string; multiplier: number }[];
+  addOns: { key: string; label: string; price: number }[];
+  sqftPresets: SqftBand[];
+  minSqft: number;
+  maxSqft: number;
 }
 
-/** The prices this build ships with, and the fallback when Booking Broom is unreachable. */
+/** STANDARD (list) rates — not the discounted Davenport seed numbers. */
 export const DEFAULT_PRICING_CONFIG: PricingConfig = {
-  kind: "per-service-branch",
-  homeCleaning: {
-    base: 129,
-    perBed: 15,
-    perBath: 10,
-    per500SqFt: 12,
-    includedBedrooms: 2,
-    includedBathrooms: 2,
-    includedSqFt: 1500,
-    frequencyMultipliers: [
-      { key: "weekly", label: "Weekly", multiplier: 1 },
-      { key: "biweekly", label: "Every other week", multiplier: 1.15 },
-      { key: "monthly", label: "Monthly", multiplier: 1.35 },
-    ],
-  },
-  officeCleaning: {
-    base: 199,
-    per500SqFt: 18,
-    perRestroom: 25,
-    includedRestrooms: 2,
-    includedSqFt: 2000,
-    frequencyMultipliers: [
-      { key: "weekly", label: "Weekly", multiplier: 1 },
-      { key: "biweekly", label: "Every other week", multiplier: 1.12 },
-      { key: "monthly", label: "Monthly", multiplier: 1.3 },
-    ],
-  },
-  deepCleaningMultiplier: 1.8,
-  moveInOut: {
-    base: 249,
-    perBed: 25,
-    perBath: 20,
-    per500SqFt: 18,
-    includedBedrooms: 2,
-    includedBathrooms: 2,
-    includedSqFt: 1500,
-  },
-  postConstruction: {
-    base: 299,
-    per500SqFt: 22,
-    includedSqFt: 2000,
-    debrisMultipliers: [
-      { key: "light", label: "Light debris", multiplier: 1 },
-      { key: "medium", label: "Medium debris", multiplier: 1.25 },
-      { key: "heavy", label: "Heavy debris", multiplier: 1.55 },
-    ],
-  },
-  airbnbTurnover: {
-    base: 119,
-    perBed: 12,
-    perBath: 10,
-    includedBedrooms: 1,
-    includedBathrooms: 1,
-    highVolumeMultiplier: 0.92,
-    highVolumeThreshold: 4,
-  },
-  sqftBands: [
-    { label: "Under 1,000", value: 900 },
-    { label: "1,000–1,500", value: 1250 },
-    { label: "1,500–2,500", value: 2000 },
-    { label: "2,500–4,000", value: 3200 },
-    { label: "4,000+", value: 4500 },
+  kind: "sqft-rate-min",
+  serviceRates: [
+    { key: "house", perSqft: 0.15, minBase: 129 },
+    { key: "apartment", perSqft: 0.15, minBase: 99 },
+    { key: "maintenance", perSqft: 0.15, minBase: 109 },
+    { key: "deep", perSqft: 0.2, minBase: 199 },
+    { key: "move", perSqft: 0.23, minBase: 189 },
+    { key: "airbnb", perSqft: 0.12, minBase: 149 },
+    { key: "post-construction", perSqft: 0.39, minBase: 249 },
   ],
+  bedroomRate: 18,
+  bathroomRate: 28,
+  frequencyMultipliers: [
+    { key: "one-time", label: "One-time", multiplier: 1 },
+    { key: "weekly", label: "Weekly", multiplier: 0.85 },
+    { key: "bi-weekly", label: "Bi-weekly", multiplier: 0.9 },
+    { key: "monthly", label: "Monthly", multiplier: 0.95 },
+  ],
+  addOns: [
+    { key: "kitchen-deep", label: "Kitchen deep clean", price: 45 },
+    { key: "oven", label: "Oven cleaning", price: 35 },
+    { key: "fridge", label: "Fridge cleaning", price: 35 },
+    { key: "windows-interior", label: "Windows (interior)", price: 40 },
+    { key: "windows-exterior", label: "Windows (exterior)", price: 55 },
+    { key: "laundry", label: "Laundry fold & put away", price: 25 },
+    { key: "cabinets", label: "Inside cabinets", price: 40 },
+    { key: "garage", label: "Garage sweep & wipe", price: 50 },
+    { key: "balcony", label: "Patio / balcony", price: 30 },
+    { key: "pets", label: "Pet-friendly detail", price: 20 },
+  ],
+  sqftPresets: [
+    { label: "Under 800 sq ft", value: 600 },
+    { label: "800–1,200 sq ft", value: 1000 },
+    { label: "1,200–2,000 sq ft", value: 1600 },
+    { label: "2,000–2,600 sq ft", value: 2200 },
+    { label: "2,600+ sq ft", value: 3000 },
+  ],
+  minSqft: 400,
+  maxSqft: 6000,
 };
 
-/**
- * Guards a config that arrived over the wire. Only checks enough to know the
- * engine can run on it — a wrong-shaped payload must fall back rather than
- * quote $0.
- */
+const SERVICE_TYPE_IDS: ServiceTypeId[] = [
+  "house",
+  "apartment",
+  "move",
+  "airbnb",
+  "post-construction",
+  "maintenance",
+  "deep",
+];
+
+const FREQUENCY_IDS = ["one-time", "weekly", "bi-weekly", "monthly"] as const;
+
+const ADDON_IDS = [
+  "kitchen-deep",
+  "oven",
+  "fridge",
+  "windows-interior",
+  "windows-exterior",
+  "laundry",
+  "cabinets",
+  "garage",
+  "balcony",
+  "pets",
+] as const;
+
+/** Marketing service slug → sqft-rate-min service key. */
+export function serviceKeyForSlug(slug: string): ServiceTypeId | null {
+  switch (slug) {
+    case "home-cleaning":
+      return "maintenance";
+    case "office-cleaning":
+      return "house";
+    case "deep-cleaning":
+      return "deep";
+    case "move-in-out":
+      return "move";
+    case "post-construction":
+      return "post-construction";
+    case "airbnb-turnover":
+      return "airbnb";
+    default:
+      return null;
+  }
+}
+
+/** Wizard uses `biweekly`; engine/config uses `bi-weekly`. */
+export function normalizeFrequency(raw: string): string {
+  if (raw === "biweekly") return "bi-weekly";
+  return raw;
+}
+
 export function isUsablePricingConfig(value: unknown): value is PricingConfig {
   if (!value || typeof value !== "object") return false;
   const config = value as Partial<PricingConfig>;
-  if (config.kind !== "per-service-branch") return false;
-  if (typeof config.deepCleaningMultiplier !== "number") return false;
-  if (typeof config.homeCleaning?.base !== "number") return false;
-  if (typeof config.officeCleaning?.base !== "number") return false;
-  if (typeof config.moveInOut?.base !== "number") return false;
-  if (typeof config.postConstruction?.base !== "number") return false;
-  if (typeof config.airbnbTurnover?.base !== "number") return false;
-  if (!Array.isArray(config.homeCleaning?.frequencyMultipliers)) return false;
-  if (!Array.isArray(config.sqftBands) || config.sqftBands.length === 0) {
+  if (config.kind !== "sqft-rate-min") return false;
+  if (typeof config.bedroomRate !== "number") return false;
+  if (typeof config.bathroomRate !== "number") return false;
+  if (typeof config.minSqft !== "number") return false;
+  if (typeof config.maxSqft !== "number") return false;
+  if (!Array.isArray(config.sqftPresets) || config.sqftPresets.length === 0) {
     return false;
   }
-  return true;
+  if (!Array.isArray(config.serviceRates)) return false;
+  if (!Array.isArray(config.frequencyMultipliers)) return false;
+  if (!Array.isArray(config.addOns)) return false;
+
+  return (
+    SERVICE_TYPE_IDS.every((id) =>
+      config.serviceRates!.some((rate) => rate.key === id),
+    ) &&
+    FREQUENCY_IDS.every((id) =>
+      config.frequencyMultipliers!.some((freq) => freq.key === id),
+    ) &&
+    ADDON_IDS.every((id) => config.addOns!.some((addOn) => addOn.key === id))
+  );
 }
 
-export function multiplierFor(
-  multipliers: LabelledMultiplier[],
-  key: string,
-): number {
-  return multipliers.find((m) => m.key === key)?.multiplier ?? 1;
+export function minimumBase(
+  config: PricingConfig = DEFAULT_PRICING_CONFIG,
+): Record<ServiceTypeId, number> {
+  return Object.fromEntries(
+    config.serviceRates.map((rate) => [rate.key, rate.minBase]),
+  ) as Record<ServiceTypeId, number>;
 }
 
 /**
- * The cheapest a service can quote: the base with nothing above the included
- * bedrooms, bathrooms and square footage. This is the "from $X" figure the
- * marketing pages advertise, derived so it can never contradict the calculator.
+ * The cheapest a service can quote — the published "from $X" for marketing pages.
  */
 export function startingPriceFor(
   serviceSlug: string,
   config: PricingConfig = DEFAULT_PRICING_CONFIG,
 ): number {
-  switch (serviceSlug) {
-    case "home-cleaning":
-      return config.homeCleaning.base;
-    case "office-cleaning":
-      return config.officeCleaning.base;
-    case "deep-cleaning":
-      return Math.round(config.homeCleaning.base * config.deepCleaningMultiplier);
-    case "move-in-out":
-      return config.moveInOut.base;
-    case "post-construction":
-      return config.postConstruction.base;
-    case "airbnb-turnover":
-      return config.airbnbTurnover.base;
-    default:
-      return 0;
-  }
+  const key = serviceKeyForSlug(serviceSlug);
+  if (!key) return 0;
+  return minimumBase(config)[key] ?? 0;
 }
