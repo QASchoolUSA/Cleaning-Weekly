@@ -1,2 +1,5 @@
 # Host-level www→apex redirects are handled in Cloudflare (absolute URLs
 # are rejected in Workers _redirects). Keep this file for relative rules only.
+#
+# Trailing-slash → non-slash is handled by wrangler assets.html_handling
+# ("drop-trailing-slash"), aligned with BaseLayout canonicals + sitemap locs.
