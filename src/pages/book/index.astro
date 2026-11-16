@@ -4,7 +4,11 @@ export const prerender = true;
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import Header from "../../components/Header.astro";
 import Footer from "../../components/Footer.astro";
+import { cities } from "../../data/cities";
+import { siteConfig } from "../../config/site";
 import "../../styles/booking-wizard.css";
+
+const cityNames = cities.map((c) => c.name);
 ---
 
 <BaseLayout
@@ -18,6 +22,9 @@ import "../../styles/booking-wizard.css";
     <div class="container book-page__inner">
       <header class="book-page__header">
         <h1 class="book-page__title">Book your cleaning</h1>
+        <p class="book-page__lead">
+          Flat weekly rates for homes and offices across Central Florida—not surge pricing, not a gig app.
+        </p>
       </header>
 
       <div id="booking-wizard" class="book-shell">
@@ -42,6 +49,98 @@ import "../../styles/booking-wizard.css";
         </div>
       </div>
     </div>
+
+    <section class="book-seo section" aria-labelledby="book-how-heading">
+      <div class="container container--narrow book-seo__inner">
+        <h2 id="book-how-heading" class="headline">How weekly cleaning works</h2>
+        <p>
+          Cleaning Weekly is built for recurring service. You tell us whether the space is a home or office, how
+          many bedrooms and bathrooms you have (or roughly how large the suite is), and whether you want weekly,
+          biweekly, or monthly visits. We quote a flat rate for that cadence, assign a consistent local team, and
+          show up on the same rhythm—so you are not re-explaining preferences to a new person every visit.
+        </p>
+        <p>
+          First visits sometimes start with a deeper reset when a home has gone months without professional
+          cleaning. After that, the weekly checklist focuses on kitchens, baths, floors, dusting, and high-touch
+          surfaces so Florida humidity and everyday traffic do not pile back up. Offices get the same reliability
+          with restrooms, breakrooms, and shared desks on a schedule that fits your business hours.
+        </p>
+
+        <h2 class="headline">Pricing cadence, explained</h2>
+        <p>
+          Weekly rates are priced so you know the number before we arrive—no marketplace surge and no surprise
+          add-ons at the door. Biweekly visits usually cost more <em>per visit</em> than weekly for the same home
+          because more builds up between cleans; monthly is a maintenance rhythm for lighter traffic, not a
+          substitute for a deep clean when a space is already overdue. Your estimate in the wizard above uses
+          bedrooms, bathrooms, square footage, service type, and frequency—the same inputs we use across Orlando
+          and nearby cities.
+        </p>
+        <p>
+          For planning bands and what a standard weekly clean includes, read our{' '}
+          <a href="/guides/weekly-house-cleaning-cost-orlando">Orlando weekly house cleaning cost guide</a>. Exact
+          quotes still come from the form on this page.
+        </p>
+
+        <h2 class="headline">Where we serve</h2>
+        <p>
+          {siteConfig.serviceAreaPolicy} We currently list routes across{' '}
+          {cityNames.slice(0, -1).join(', ')}, and {cityNames[cityNames.length - 1]}. Neighborhood detail lives on
+          each city page under <a href="/locations">locations</a>—for example Downtown and Lake Nona in Orlando,
+          Park Avenue in Winter Park, or the Lake Mary corridor near Sanford.
+        </p>
+        <p>
+          If your address sits just outside a listed city, still request a quote with your ZIP. Route density
+          changes week to week, and we will tell you honestly if we can cover it.
+        </p>
+
+        <h2 class="headline">Booking FAQ</h2>
+        <div class="book-seo__faq">
+          <details>
+            <summary>What happens after I submit the quote?</summary>
+            <p>
+              You receive a clear estimate based on the details you entered. When you are ready, you can confirm
+              booking details so we can schedule the first visit and share arrival guidance.
+            </p>
+          </details>
+          <details>
+            <summary>Can I book a one-time deep clean or move-out?</summary>
+            <p>
+              Yes. The wizard supports deep cleans, move-in/out, post-construction, and Airbnb turnovers alongside
+              recurring home and office service. Choose the service type that matches the job.
+            </p>
+          </details>
+          <details>
+            <summary>Will I get the same cleaners every week?</summary>
+            <p>
+              That is the goal. Recurring customers get a consistent team so preferences stick and you are not
+              starting from zero each week.
+            </p>
+          </details>
+          <details>
+            <summary>How do I contact you without a phone number yet?</summary>
+            <p>
+              Email{' '}
+              <a href={`mailto:${siteConfig.email}`}>{siteConfig.email}</a>{' '}
+              or use this booking flow. We do not publish placeholder phone numbers—when a real line is assigned,
+              it will appear on <a href="/contact">contact</a>.
+            </p>
+          </details>
+          <details>
+            <summary>Are teams insured and background-checked?</summary>
+            <p>
+              Yes. Cleaning Weekly carries insurance for residential and commercial work, and team members are
+              background-checked. Ask for proof before your first visit if you need it for a building or HOA.
+            </p>
+          </details>
+        </div>
+
+        <p class="book-seo__aside">
+          Prefer to learn more first? Read <a href="/about">about Cleaning Weekly</a> or browse{' '}
+          <a href="/services/home-cleaning">home cleaning</a> and{' '}
+          <a href="/locations">service areas</a>.
+        </p>
+      </div>
+    </section>
   </main>
   <Footer />
 </BaseLayout>
@@ -49,3 +148,66 @@ import "../../styles/booking-wizard.css";
 <script>
   import "../../scripts/booking-wizard.ts";
 </script>
+
+<style>
+  .book-page__lead {
+    margin: var(--space-3) 0 0;
+    color: var(--ink-secondary);
+    font-size: 1rem;
+    text-wrap: balance;
+  }
+
+  .book-seo {
+    padding-block: clamp(var(--space-10), 5vw, var(--space-16));
+    border-top: 1px solid var(--border);
+    background: var(--ground);
+  }
+
+  .book-seo__inner {
+    max-width: 40rem;
+  }
+
+  .book-seo .headline {
+    margin: var(--space-10) 0 var(--space-4);
+    color: var(--teal-deep);
+  }
+
+  .book-seo .headline:first-child {
+    margin-top: 0;
+  }
+
+  .book-seo p {
+    color: var(--ink-secondary);
+    line-height: 1.65;
+  }
+
+  .book-seo__faq {
+    display: grid;
+    gap: var(--space-3);
+    margin-top: var(--space-4);
+  }
+
+  .book-seo__faq details {
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background: var(--ground);
+    overflow: hidden;
+  }
+
+  .book-seo__faq summary {
+    padding: var(--space-4) var(--space-5);
+    font-weight: 600;
+    cursor: pointer;
+    list-style: none;
+    color: var(--ink);
+  }
+
+  .book-seo__faq details p {
+    margin: 0;
+    padding: 0 var(--space-5) var(--space-5);
+  }
+
+  .book-seo__aside {
+    margin-top: var(--space-10);
+  }
+</style>
